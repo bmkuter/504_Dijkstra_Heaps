@@ -24,8 +24,6 @@ typedef struct _FIB_HEAP
 {
   int n;
   FIB_NODE *min;
-  int phi;
-  int degree;
 } FIB_HEAP;
 
 //Function Declaration
@@ -50,8 +48,7 @@ int cal_degree(int n){
   }
   return count;
 }
-void print_heap(FIB_NODE *n)
-{
+void print_heap(FIB_NODE *n){
   FIB_NODE *x = NULL;
   for (x = n;; x = x->right_sibling) {
     if (x->child == NULL)
@@ -60,7 +57,7 @@ void print_heap(FIB_NODE *n)
     }
     else
     {
-      printf("Node (%d) with child (%d)\n", x->key, x->child->id);
+      printf("Node (%d) with child (%d)\n", x->id, x->child->id);
       print_heap(x->child);
     }
     if (x->right_sibling == n)
@@ -69,6 +66,28 @@ void print_heap(FIB_NODE *n)
     }
   }
 }
+void decrease_key_helper(FIB_HEAP *H, FIB_NODE *n, int id, int new_key){
+  //Finds a node in the heap based on input ID, and then calls decreaseKey on it.
+  FIB_NODE* found = NULL;
+  n->visited = 1;
+
+  if (n->id == id)
+  {
+    n->visited = 0;
+    found = n;
+    fib_heap_decrease_key(H, found, new_key);
+  }
+  if (n->child != NULL)
+  {
+    decrease_key_helper(H, n-> child, id, new_key);
+  }
+  if (n -> right_sibling->visited != 1)
+  {
+    decrease_key_helper(H,n->right_sibling, id, new_key);
+  }
+  n->visited = 0;
+}
+
 
 
 //Function Definitions
@@ -78,8 +97,6 @@ FIB_HEAP *make_fib_heap()
   H = (FIB_HEAP *)malloc(sizeof(FIB_HEAP));
   H->n = 0;
   H->min = NULL;
-  H->phi = 0;
-  H->degree = 0;
   return H;
 }
 
@@ -181,10 +198,10 @@ void consolidate(FIB_HEAP *H)
       if (y == H->min)
         H->min = x;
       fib_heap_link(H, y, x);
-      // if (y->right_sibling == x)
-      // {
-      //   H->min = x;
-      // }
+      if (y->right_sibling == x)
+      {
+        H->min = x;
+      }
       A[d] = NULL;
       d++;
     }
@@ -323,7 +340,7 @@ FIB_NODE* fib_heap_extract_min(FIB_HEAP *H)
     FIB_NODE* z = H->min;
     FIB_NODE* x = NULL;
     FIB_NODE* z_ptr = z;
-    if (x->child != NULL)
+    if (z->child != NULL)
     {
       x = z->child;
       do

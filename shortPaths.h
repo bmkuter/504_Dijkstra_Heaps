@@ -227,27 +227,29 @@ void DijkstraFibHeap(nodeitem N[], int Or, int Nm)
     fib_heap_insert(heap, new_node, N[i].key, i);
   }
   print_heap(heap->min);
+
+  extracted_min = fib_heap_extract_min(heap);
+  do{
+    min_v = extracted_min->id;
+    min_d = extracted_min->key;
+
+    edge = N[min_v].first;  //Get the first of any edges from a node.
+
+    while (edge != NULL)
+    {
+      v = edge->end;
+      dv = min_d + edge->length;
+      printf("%d->%d with weight %d\n",min_v, v, edge->length);
+      if (N[v].key > dv) {
+        N[v].key = dv;
+        N[v].P = min_v;
+        printf("Trying to find node %d in heap to change key from %d to %d\n",v,(edge->length),dv);
+        decrease_key_helper(heap, heap->min, v, dv);
+      }
+      edge = edge->next;
+    }
+    extracted_min = fib_heap_extract_min(heap);
+  }while (heap->min != NULL);
   return;
-  // while (root != NULL) {
-  //   min_v = min->V;
-  //   min_d = min->key;
-  //
-  //   edge = N[min_v].first;  //Get the first of any edges from a node.
-  //
-  //   while (edge != NULL)
-  //   {
-  //     v = edge->end;
-  //     dv = min_d + edge->length;
-  //     printf("%d->%d with weight %d\n",min_v, v, edge->length);
-  //     if (N[v].key > dv) {
-  //       N[v].key = dv;
-  //       N[v].P = min_v;
-  //       //DECREASE KEY
-  //     }
-  //     edge = edge->next;
-  //   }
-  //
-  // }
-  // return;
 }
 #endif
