@@ -12,8 +12,11 @@
 
 #include <queue>
 #include <deque>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
 #include "myHeap.full.h"  // This is my version of HW 2.  You can include your own binary heap
-#include "fib_heap.h"
+#include "ben_fib_heap.h"
 
 #define LARGE1 9999999
 
@@ -178,18 +181,21 @@ void DijkstraHeap(nodeitem N[], int Or, int Nm)
       min_v = temp->id;
       min_d = temp->key;
 
+      // printf("ID: %d, ",min_v );
+      // printf("Key: %d\n",min_d);
+
       // And explore edges
       edge = N[min_v].first;  //Get the first of any edges from a node.
       while (edge != NULL){   //explore the outgoing arcs of u
           v = edge->end;      //Node at the other end of the edge.
           dv = min_d + edge->length;
           if (N[v].key > dv){ //If v's current distance is greater than the distance from source to u + u to v...
-            //printf("Previous value for node %d: %d ", v, N[v].key);
+            //printf("Previous value for node %d: %d\n", v, N[v].key);
             thisHeap->insert(&N[v]);
             N[v].key = dv;  //Update v's distance to the new shorter path.
             N[v].P = min_v; //Set node v's parent to the current node, as it yields a shorter path.
             thisHeap->decreaseKey(N[v].position, dv);
-            //thisHeap->decreaseKey(&N[v]);
+            //printf("Decreasing...\n" );
           }                   //if D > dv
           edge = edge->next;
       }           // while edge
@@ -198,82 +204,50 @@ void DijkstraHeap(nodeitem N[], int Or, int Nm)
 
 void DijkstraFibHeap(nodeitem N[], int Or, int Nm)
 {
-  Heap<nodeitem> *thisHeap;
   struct arc *edge;
-  int v, dv, min_d, min_v;
-
-  thisHeap = new Heap<nodeitem>;
-  nodeitem *temp;
-
-  //Fib stuff
-  fib_node* temp_fib;
+  int v, dv, min_d, min_v,min_d_2;
 
   N[Or].key = 0;  //Set starting node distance to 0.
   N[Or].id = Or;
 
   min_v = Or;     //Setting current node, min vertex
   min_d = 0;      //Setting current minimum distance to 0, as graph is unexplored.
-  printf("%d\n", Or);
-  //
-  thisHeap->insert(&N[min_v]); //Adds pointer of the origin node to the heap.
-  insertion(N[Or].key,N[Or].id);
-  /*
-  insertion(3, 1);
-  insertion(2, 2);
-  insertion(6, 3);
-  temp_fib = Extract_min();
-  printf("ID: %d\n",temp_fib->id );
-  printf("Key: %d\n",temp_fib->key);
-  display();
-  Find(mini,3,1); //Heap, old_value, new_value
-  temp_fib = Extract_min();
-  printf("ID: %d\n",temp_fib->id );
-  printf("Key: %d\n",temp_fib->key);
-  display();
-  return;
-  */
-  // Now we will display the root list of the heap
 
+  //Testing fib heap
+  FIB_NODE *new_node, *min_node, *extracted_min, *node_to_be_decrease, *find_use;
+  FIB_HEAP *heap, *h1, *h2;
+  int operation_no, new_key, dec_key, ele, i, no_of_nodes;
+  heap = (FIB_HEAP *)malloc(sizeof(FIB_HEAP));
+  heap = NULL;
+  heap = make_fib_heap();
+  //fib_heap_insert(heap, new_node, min_d);
 
-  //printf("Source node: %d \nSoure node weight: %d\n", Elements[min_v].id, Elements[min_v].key);
-  //while (mini != NULL) {
-  while (thisHeap->IsEmpty() == 0) //While priority queue isn't empty...
+  for (size_t i = 1; i <= Nm; i++)
   {
-    // Add min node from heap to workspace...
-    temp = thisHeap->remove_min();
-    temp_fib = Extract_min();
-    if (temp_fib == NULL) {
-      cout << "The heap is empty" << endl;
-    }
-    else
-    {
-      printf("ID: %d\n",temp_fib->id );
-      printf("Key: %d\n",temp_fib->key);
-    }
-    //printf("min node: %d\nmin weight: %d\n", temp->id, temp->key);
-    min_v = temp->id;
-    min_d = temp->key;
-    printf("min_v = %d, min_d = %d\n",min_v,min_d );
-
-    // And explore edges
-    edge = N[min_v].first;  //Get the first of any edges from a node.
-    while (edge != NULL){   //explore the outgoing arcs of u
-        v = edge->end;      //Node at the other end of the edge.
-        dv = min_d + edge->length;
-        if (N[v].key > dv){ //If v's current distance is greater than the distance from source to u + u to v...
-          //printf("Previous value for node %d: %d ", v, N[v].key);
-          thisHeap->insert(&N[v]); //Insert new connected node
-          insertion(dv,v);
-          N[v].key = dv;  //Update v's distance to the new shorter path.
-          N[v].P = min_v; //Set node v's parent to the current node, as it yields a shorter path.
-          printf("Decreasing distance from %d to %d by %d\n", min_v, v,dv);
-          thisHeap->decreaseKey(N[v].position, dv); //Decrease current node's key
-          printf("N[%d].position = %d\n",v,N[v].position );
-          Find(mini,N[v].position,dv); /*Heap, old_value, new_value*/
-          //thisHeap->decreaseKey(&N[v]);
-        }                   //if D > dv
-        edge = edge->next;
-    }           // while edge
+    fib_heap_insert(heap, new_node, N[i].key, i);
   }
+  print_heap(heap->min);
+  return;
+  // while (root != NULL) {
+  //   min_v = min->V;
+  //   min_d = min->key;
+  //
+  //   edge = N[min_v].first;  //Get the first of any edges from a node.
+  //
+  //   while (edge != NULL)
+  //   {
+  //     v = edge->end;
+  //     dv = min_d + edge->length;
+  //     printf("%d->%d with weight %d\n",min_v, v, edge->length);
+  //     if (N[v].key > dv) {
+  //       N[v].key = dv;
+  //       N[v].P = min_v;
+  //       //DECREASE KEY
+  //     }
+  //     edge = edge->next;
+  //   }
+  //
+  // }
+  // return;
 }
 #endif
