@@ -57,15 +57,29 @@ int main(){
     test->insert(nodeTest2, nodeTest2->key);
     test->insert(nodeTest5, nodeTest4->key);
 
+    cout << "Head is: " << test->head->item->id << " with key: " << test->head->key <<  endl;
 
     //test->printHeap(test->head);
     
-    test->merge();
+    bin_node<nodeitem>* ptr = test->head;
 
-     
+    cout << "Root Level is: ";
+    while (ptr != nullptr)
+    {
+        cout << "Node: " <<  ptr->item->id<< " key: "<< ptr->key << " deg:" << ptr->degree << "<->";        
+        ptr = ptr->rsibling;
+    }
+    cout << endl;
+
+    //test->merge();
+
+    bin_test = test->popMin();
+
+    cout << "Popped: " << bin_test->item->id << " with key: "<< bin_test->key << endl;
+    
     //test->printHeap(test->head);
 
-    bin_node<nodeitem>* ptr = test->head;
+    ptr = test->head;
 
     cout << "Root Level is: ";
     while (ptr != nullptr)
@@ -100,7 +114,8 @@ int main(){
     }
 
     ptr = test->head;
-
+   
+   cout << "Root Level is: ";
    while (ptr != nullptr)
     {
         cout << "Node: " <<  ptr->item->id<< " key: "<< ptr->key << " deg:" << ptr->degree << "<->";

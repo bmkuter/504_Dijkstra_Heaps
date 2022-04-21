@@ -134,7 +134,7 @@ class BinomialHeap
                     }
                     else
                     {
-                        tree2->rsibling->lsibling = nullptr;
+                        tree2->rsibling->lsibling = tree2->lsibling;
                     }
 
                     if (tree2->rsibling != nullptr)
@@ -143,7 +143,7 @@ class BinomialHeap
                     }
                     else
                     {
-                        tree2->lsibling->rsibling = nullptr;
+                        tree2->lsibling->rsibling = tree2->rsibling;
                     }
                     // Make tree2 leftmost child of tree1 and link current child node to new child
                     
@@ -240,7 +240,18 @@ class BinomialHeap
                     ptr = ptr->rsibling;
                 }
             }
-            //ptr = head;
+            // Reset array[] with values from root
+            for (int i = 0; i < 40; i++)
+            {
+                array[i] = nullptr;
+            }
+            ptr = this->head;
+            while (ptr != nullptr)
+            {
+                degree = ptr->degree;
+                this->array[degree] = ptr;
+                ptr = ptr->rsibling;
+            }
 
         }
         
@@ -274,11 +285,13 @@ class BinomialHeap
             // Connect min's lsibling to its right sibling
             if (minPtr->lsibling != nullptr)
             {
+                cout << "Connecting: " << minPtr->lsibling->item->id << " to " << minPtr->rsibling->item->id << endl;
                 minPtr->lsibling->rsibling = minPtr->rsibling;
             }
             // Otherwise if lsibling is null and right sibling exists set it's lsibling to null
             else if (minPtr->rsibling != nullptr)
             {
+                cout << "Connecting: " << minPtr->rsibling->item->id << " to nullptr" << endl;
                 minPtr->rsibling->lsibling = nullptr;
                 // If minPtr was head, move head pointer to rsibling of minPtr
                 if(this->head == minPtr)
@@ -287,7 +300,7 @@ class BinomialHeap
                 }
             }
             // Else if minPtr was head and pointed to a tree with no left or right sibling, set head to nullptr
-            else 
+            if ((minPtr->lsibling == nullptr) && (minPtr->rsibling == nullptr))
             {
                 if(this->head == minPtr)
                 {
@@ -297,18 +310,20 @@ class BinomialHeap
             // Connect min's right sibling to left sibling
             if (minPtr->rsibling != nullptr)
             {
+                cout << "Connecting: " << minPtr->rsibling->item->id << " to " << minPtr->lsibling->item->id << endl;
                 minPtr->rsibling->lsibling = minPtr->lsibling;
             }
             // Otherwise if lsibiling exists and min's rsibling is null, set lsibling's rsibling to null
             else if (minPtr->lsibling != nullptr)
             {
+                cout << "Connecting: " << minPtr->lsibling->item->id << " to nullptr" << endl;
                 minPtr->lsibling->rsibling = nullptr;
             }
 
             // If min had a child
             if (minPtr->child != nullptr)
             {
-                // check to see if min was the only node in previous root and set child to
+                // check to see if min was the only node in previous root and set child to head
                 if (this->head == nullptr)
                 {
                     this->head = minPtr->child;
@@ -345,7 +360,11 @@ class BinomialHeap
                 this->size--;
                 this->findMin();
                 this->merge();
-                return minPtr;
+            }
+            else if((minPtr->lsibling != nullptr) || (minPtr->rsibling != nullptr))
+            {
+                this->merge();
+                this->size--;
             }
             else
             {
@@ -353,8 +372,9 @@ class BinomialHeap
                 minPtr->rsibling = nullptr;
                 minPtr->lsibling = nullptr;
                 this->size--;
-                return minPtr;
             }
+            return minPtr;
+
         }
  
     protected:
