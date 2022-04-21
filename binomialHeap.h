@@ -46,7 +46,7 @@ class BinomialHeap
         };
 
 /*************************************************************************************
-                            Insepction
+                            Insepction/Utility
 *************************************************************************************/
         
         /* Returns true if the heap is empty, false otherwise 
@@ -54,6 +54,23 @@ class BinomialHeap
         */
         bool isEmpty(){
             return this->size == 0;
+        }
+
+        // This isn't quite right yet, but it is WIP
+        void printHeap(bin_node<Object>* ptr ){
+            
+            while (ptr != nullptr)
+            {
+                cout << "Node id: " <<  ptr->item->id << " Degree: " << ptr->degree;
+                if (ptr->child != nullptr)
+                {
+                    cout << endl << " with children: ";
+                    printHeap(ptr->child);
+                }
+                cout << " <-> ";
+                ptr = ptr->rsibling;
+            }
+            cout << endl;
         }
 
 /*************************************************************************************
@@ -107,7 +124,9 @@ class BinomialHeap
             // Make the root with the greater key the child of the other root
             if(tree1->key < tree2->key){
                     /* FOR TEST REMOVE BEFORE SUBMISSION */
-                    cout << "Got tree1 < tree2 case" << endl;
+                    cout << "Got " << tree2->item->id << ">" << tree1->item->id << " case" << endl;
+                    /* FOR TEST REMOVE BEFORE SUBMISSION */
+
                     // Remove tree2 from root level list by linking Lsib of tree2 to Rsib of tree2
                     if(tree2->lsibling != nullptr)
                     {
@@ -117,6 +136,7 @@ class BinomialHeap
                     {
                         tree2->rsibling->lsibling = nullptr;
                     }
+
                     if (tree2->rsibling != nullptr)
                     {
                         tree2->rsibling->lsibling = tree2->lsibling;
@@ -126,6 +146,7 @@ class BinomialHeap
                         tree2->lsibling->rsibling = nullptr;
                     }
                     // Make tree2 leftmost child of tree1 and link current child node to new child
+                    
                     tree2->parent = tree1;
                     tree2->rsibling = tree1->child;
                     if (tree2->rsibling != nullptr)
@@ -146,7 +167,9 @@ class BinomialHeap
             else
             {
                     /* FOR TEST REMOVE BEFORE SUBMISSION */
-                    cout << "Got tree2 < tree1 case" << endl;
+                    cout << "Got " << tree1->item->id << ">" << tree2->item->id << " case" << endl;
+                    /* FOR TEST REMOVE BEFORE SUBMISSION */
+
                     // Remove tree1 from root level list by linking Lsib of tree1 to Rsib of tree1
                     if(tree1->lsibling != nullptr)
                     {
@@ -191,8 +214,10 @@ class BinomialHeap
         */
         void merge()
         {
-            bin_node<Object>* ptr = head;
+            bin_node<Object>* ptr = this->head;
             int degree;
+
+            cout << "Beginning merge from head: " << ptr->item->id << endl;
             
             while (ptr != nullptr)
             {   
@@ -201,6 +226,7 @@ class BinomialHeap
                 // Check the array for a tree of the same degree if it exists, 
                 if (this->array[degree] != nullptr)
                 {
+                    cout << "Merging two trees with degree: " << degree << endl;
                     // Merge the two nodes of same degree and set ptr to new tree, re-enter while loop with new ptr which has degree+1
                     ptr = linkTrees(this->array[degree], ptr);
                     // Clear the array slot for old degree
@@ -209,32 +235,126 @@ class BinomialHeap
                 // Otherwise if the array slot is null, add the ptr to the array and move the pointer to the right
                 else
                 {
+                    cout << "Adding trees with degree: " << degree << " to array." << endl;
                     this->array[degree] = ptr;
                     ptr = ptr->rsibling;
                 }
             }
-        }
+            //ptr = head;
 
-        // This isn't quite right yet, but it is WIP
-        void printHeap(bin_node<Object>* ptr ){
-            
+        }
+        
+
+        void findMin(){
+            bin_node<Object>* ptr = this->head;
+            this->minRoot = ptr;
             while (ptr != nullptr)
             {
-                cout << "Node id: " <<  ptr->item->id << " Degree: " << ptr->degree;
-                if (ptr->child != nullptr)
+                if(ptr->key < minRoot->key)
                 {
-                    cout << endl << " with children: ";
-                    printHeap(ptr->child);
+                    minRoot = ptr;
                 }
-                cout << " <-> ";
                 ptr = ptr->rsibling;
             }
-            cout << endl;
         }
 
         bin_node<Object>* popMin()
         {
+            // If empty return nullptr
+            if (this->isEmpty())
+            {
+                return nullptr;
+            }
 
+            bin_node<Object> * minPtr = this->minRoot;
+            bin_node<Object> *ptr;
+            bin_node<Object> *tempPtr;
+            
+            // Pull minRoot out of root list
+            // Connect min's lsibling to its right sibling
+            if (minPtr->lsibling != nullptr)
+            {
+                minPtr->lsibling->rsibling = minPtr->rsibling;
+            }
+            // Otherwise if lsibling is null and right sibling exists set it's lsibling to null
+            else if (minPtr->rsibling != nullptr)
+            {
+                minPtr->rsibling->lsibling = nullptr;
+                // If minPtr was head, move head pointer to rsibling of minPtr
+                if(this->head == minPtr)
+                {
+                    this->head = minPtr->rsibling;
+                }
+            }
+            // Else if minPtr was head and pointed to a tree with no left or right sibling, set head to nullptr
+            else 
+            {
+                if(this->head == minPtr)
+                {
+                    this->head = nullptr;
+                }
+            }
+            // Connect min's right sibling to left sibling
+            if (minPtr->rsibling != nullptr)
+            {
+                minPtr->rsibling->lsibling = minPtr->lsibling;
+            }
+            // Otherwise if lsibiling exists and min's rsibling is null, set lsibling's rsibling to null
+            else if (minPtr->lsibling != nullptr)
+            {
+                minPtr->lsibling->rsibling = nullptr;
+            }
+
+            // If min had a child
+            if (minPtr->child != nullptr)
+            {
+                // check to see if min was the only node in previous root and set child to
+                if (this->head == nullptr)
+                {
+                    this->head = minPtr->child;
+                    minPtr->child = nullptr;
+                }
+                else
+                {
+                    ptr = minPtr->child;
+                    minPtr->child = nullptr;
+                    while (ptr != nullptr)
+                    {
+                        /* FOR TEST REMOVE BEFORE SUBMISSION */
+                        cout << "ptr is to node: " << ptr->item->id << endl;
+                        /* FOR TEST REMOVE BEFORE SUBMISSION */
+                        ptr->parent = nullptr;
+                        this->head->lsibling = ptr;
+                        tempPtr = this->head;
+                        this->head = ptr;
+                        ptr = ptr->rsibling;
+                        this->head->rsibling = tempPtr;
+                    }
+                }
+                ptr = this->head;
+                /* FOR TEST REMOVE BEFORE SUBMISSION*/
+                while (ptr != nullptr)
+                {
+                cout << "Node: " <<  ptr->item->id<< " key: "<< ptr->key << " deg:" << ptr->degree << "<->";
+                ptr = ptr->rsibling;
+                }
+                cout << endl;
+                /* FOR TEST REMOVE BEFORE SUBMISSION */
+                minPtr->rsibling = nullptr;
+                minPtr->lsibling = nullptr;
+                this->size--;
+                this->findMin();
+                this->merge();
+                return minPtr;
+            }
+            else
+            {
+                // Break minPtr sibling links
+                minPtr->rsibling = nullptr;
+                minPtr->lsibling = nullptr;
+                this->size--;
+                return minPtr;
+            }
         }
  
     protected:

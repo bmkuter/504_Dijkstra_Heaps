@@ -35,7 +35,7 @@ int main(){
 
     nodeTest3->first = nullptr;
     nodeTest3->id = 3;
-    nodeTest3->key = -1;
+    nodeTest3->key = 2;
     nodeTest3->P = 0;
     nodeTest3->position = 0;
 
@@ -58,23 +58,75 @@ int main(){
     test->insert(nodeTest5, nodeTest4->key);
 
 
-    test->printHeap(test->head);
+    //test->printHeap(test->head);
     
     test->merge();
 
-    test->printHeap(test->head);
+     
+    //test->printHeap(test->head);
 
     bin_node<nodeitem>* ptr = test->head;
 
     cout << "Root Level is: ";
     while (ptr != nullptr)
     {
-        cout << ptr->item->id<< "deg:" << ptr->degree << "<->";
+        cout << "Node: " <<  ptr->item->id<< " key: "<< ptr->key << " deg:" << ptr->degree << "<->";        ptr = ptr->rsibling;
         ptr = ptr->rsibling;
     }
     cout << endl;
 
     cout << "MinRoot is: " << test->minRoot->item->id << " with key: " << test->minRoot->key << endl;
+
+    // Printing array values
+    for (int i = 0; i< 5; i++)
+    {
+        if (test->array[i] != nullptr)
+        {
+            cout << "Array at "<< i << " contains tree with head node: " << test->array[i]->item->id << endl;
+        }
+    }
+    
+    bin_test = test->popMin();
+
+    cout << "Popped: " << bin_test->item->id << " with key: "<< bin_test->key << endl;
+
+    // Printing array values
+    for (int i = 0; i< 5; i++)
+    {
+        if (test->array[i] != nullptr)
+        {
+            cout << "Array at "<< i << " contains tree with head node: " << test->array[i]->item->id << endl;
+        }
+    }
+
+    ptr = test->head;
+
+   while (ptr != nullptr)
+    {
+        cout << "Node: " <<  ptr->item->id<< " key: "<< ptr->key << " deg:" << ptr->degree << "<->";
+        ptr = ptr->rsibling;
+    }
+    cout << endl;
+
+    cout << "Head is: " << test->head->item->id << " with key: " << test->head->key <<  endl;
+    cout << "MinRoot is: " << test->minRoot->item->id << " with key: " << test->minRoot->key << endl;
+
+    test->printHeap(test->head);
+    
+
+
+    // test->popMin();
+
+    // ptr = test->head;
+
+
+    // while (ptr != nullptr)
+    // {
+    //     cout << "Node: " <<  ptr->item->id<< " deg:" << ptr->degree << "<->";
+    //     ptr = ptr->rsibling;
+    // }
+    // cout << endl;
+
 
     //bin_test = test->linkTrees(test->head, test->head->rsibling);
 
