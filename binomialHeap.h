@@ -7,6 +7,8 @@
 
 using namespace std;
 
+const int MAX_SIZE = 200000;
+
  template <class Object>
  struct bin_node{
         bin_node *parent;              // Pointer to parent node
@@ -28,10 +30,10 @@ class BinomialHeap
 
     public:
         /* MAKE PRIVATE AFTER TESTING */
-        bin_node<Object> * head;        // Points to the root of the leftmost binomial tree
-        bin_node<Object> * minRoot;     // Points to the root of the tree with smallest key
-        bin_node<Object> * array[40];   // To keep track of degree for merging
-        int size;                       // Number of elements in the Heap
+        bin_node<Object> * head;              // Points to the root of the leftmost binomial tree
+        bin_node<Object> * minRoot;           // Points to the root of the tree with smallest key
+        bin_node<Object> * array[MAX_SIZE];   // To keep track of degree for merging
+        int size;                             // Number of elements in the Heap
 
         // Heap constructor initializes all pointers to nullptr and size to 0
         BinomialHeap()
@@ -132,8 +134,9 @@ class BinomialHeap
                     {
                         tree2->lsibling->rsibling = tree2->rsibling;
                     }
-                    else
+                    else //if (tree2->rsibling != nullptr)
                     {
+                        cout << "Here's the error" << endl;
                         tree2->rsibling->lsibling = tree2->lsibling;
                     }
 
@@ -280,17 +283,25 @@ class BinomialHeap
             bin_node<Object> * minPtr = this->minRoot;
             bin_node<Object> *ptr;
             bin_node<Object> *tempPtr;
+            int minDegree = minPtr->degree;
             
+            // If the minPtr is in the array degree list, remove it
+            if (array[minDegree] == minPtr)
+            {
+                array[minDegree] = nullptr;
+            }
             // Pull minRoot out of root list
             // Connect min's lsibling to its right sibling
-            if (minPtr->lsibling != nullptr)
+            if (minPtr->lsibling != nullptr) 
             {
+                cout << "case1 minPtr->lsibling != nullptr" << endl;
                 cout << "Connecting: " << minPtr->lsibling->item->id << " to " << minPtr->rsibling->item->id << endl;
                 minPtr->lsibling->rsibling = minPtr->rsibling;
             }
             // Otherwise if lsibling is null and right sibling exists set it's lsibling to null
             else if (minPtr->rsibling != nullptr)
             {
+                cout << "case 2 minPtr->rsibling != nullptr" << endl;
                 cout << "Connecting: " << minPtr->rsibling->item->id << " to nullptr" << endl;
                 minPtr->rsibling->lsibling = nullptr;
                 // If minPtr was head, move head pointer to rsibling of minPtr
@@ -302,20 +313,23 @@ class BinomialHeap
             // Else if minPtr was head and pointed to a tree with no left or right sibling, set head to nullptr
             if ((minPtr->lsibling == nullptr) && (minPtr->rsibling == nullptr))
             {
+                cout << "case 3 (minPtr->lsibling == nullptr) && (minPtr->rsibling == nullptr)" << endl;
                 if(this->head == minPtr)
                 {
                     this->head = nullptr;
                 }
             }
             // Connect min's right sibling to left sibling
-            if (minPtr->rsibling != nullptr)
+            if ((minPtr->rsibling != nullptr) && (minPtr->lsibling != nullptr))
             {
+                cout << "case 4 minPtr->rsibling != nullptr" << endl;
                 cout << "Connecting: " << minPtr->rsibling->item->id << " to " << minPtr->lsibling->item->id << endl;
                 minPtr->rsibling->lsibling = minPtr->lsibling;
             }
             // Otherwise if lsibiling exists and min's rsibling is null, set lsibling's rsibling to null
             else if (minPtr->lsibling != nullptr)
             {
+                cout << "case 5 minPtr->lsibling != nullptr" << endl;
                 cout << "Connecting: " << minPtr->lsibling->item->id << " to nullptr" << endl;
                 minPtr->lsibling->rsibling = nullptr;
             }
@@ -364,6 +378,7 @@ class BinomialHeap
             else if((minPtr->lsibling != nullptr) || (minPtr->rsibling != nullptr))
             {
                 this->merge();
+                this->findMin();
                 this->size--;
             }
             else
@@ -371,6 +386,7 @@ class BinomialHeap
                 // Break minPtr sibling links
                 minPtr->rsibling = nullptr;
                 minPtr->lsibling = nullptr;
+                this->minRoot = nullptr;
                 this->size--;
             }
             return minPtr;

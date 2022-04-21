@@ -47,7 +47,7 @@ int main(){
     
     nodeTest5->first = nullptr;
     nodeTest5->id = 5;
-    nodeTest5->key = 4;
+    nodeTest5->key = 3;
     nodeTest5->P = 2;
     nodeTest5->position = 0;
 
@@ -55,7 +55,7 @@ int main(){
     test->insert(nodeTest4, nodeTest4->key);
     test->insert(nodeTest, nodeTest->key);
     test->insert(nodeTest2, nodeTest2->key);
-    test->insert(nodeTest5, nodeTest4->key);
+    test->insert(nodeTest5, nodeTest5->key);
 
     cout << "Head is: " << test->head->item->id << " with key: " << test->head->key <<  endl;
 
@@ -71,20 +71,18 @@ int main(){
     }
     cout << endl;
 
-    //test->merge();
+    cout << "****Testing popMin****"<< endl;
 
     bin_test = test->popMin();
 
-    cout << "Popped: " << bin_test->item->id << " with key: "<< bin_test->key << endl;
-    
-    //test->printHeap(test->head);
+    cout << "****Popped: " << bin_test->item->id << " with key: "<< bin_test->key <<"****" << endl;
 
     ptr = test->head;
-
+   
     cout << "Root Level is: ";
     while (ptr != nullptr)
     {
-        cout << "Node: " <<  ptr->item->id<< " key: "<< ptr->key << " deg:" << ptr->degree << "<->";        ptr = ptr->rsibling;
+        cout << "Node: " <<  ptr->item->id<< " key: "<< ptr->key << " deg:" << ptr->degree << "<->";
         ptr = ptr->rsibling;
     }
     cout << endl;
@@ -99,10 +97,11 @@ int main(){
             cout << "Array at "<< i << " contains tree with head node: " << test->array[i]->item->id << endl;
         }
     }
-    
+    cout << "****Testing popMin****"<< endl;
+
     bin_test = test->popMin();
 
-    cout << "Popped: " << bin_test->item->id << " with key: "<< bin_test->key << endl;
+    cout << "****Popped: " << bin_test->item->id << " with key: "<< bin_test->key <<"****" << endl;
 
     // Printing array values
     for (int i = 0; i< 5; i++)
@@ -126,22 +125,94 @@ int main(){
     cout << "Head is: " << test->head->item->id << " with key: " << test->head->key <<  endl;
     cout << "MinRoot is: " << test->minRoot->item->id << " with key: " << test->minRoot->key << endl;
 
-    test->printHeap(test->head);
+        cout << "****Testing popMin****"<< endl;
+
+    bin_test = test->popMin();
+
+    cout << "****Popped: " << bin_test->item->id << " with key: "<< bin_test->key <<"****" << endl;
+
+    ptr = test->head;
+   
+    cout << "Root Level is: ";
+    while (ptr != nullptr)
+    {
+        cout << "Node: " <<  ptr->item->id<< " key: "<< ptr->key << " deg:" << ptr->degree << "<->";
+        ptr = ptr->rsibling;
+    }
+    cout << endl;
+
+    cout << "MinRoot is: " << test->minRoot->item->id << " with key: " << test->minRoot->key << endl;
+
+    // Printing array values
+    for (int i = 0; i< 5; i++)
+    {
+        if (test->array[i] != nullptr)
+        {
+            cout << "Array at "<< i << " contains tree with head node: " << test->array[i]->item->id << endl;
+        }
+    }
+
+    bin_test = test->popMin();
+
+    cout << "****Popped: " << bin_test->item->id << " with key: "<< bin_test->key <<"****" << endl;
+
+    ptr = test->head;
+   
+    cout << "Root Level is: ";
+    while (ptr != nullptr)
+    {
+        cout << "Node: " <<  ptr->item->id<< " key: "<< ptr->key << " deg:" << ptr->degree << "<->";
+        ptr = ptr->rsibling;
+    }
+    cout << endl;
+
+    cout << "MinRoot is: " << test->minRoot->item->id << " with key: " << test->minRoot->key << endl;
+
+    // Printing array values
+    for (int i = 0; i< 5; i++)
+    {
+        if (test->array[i] != nullptr)
+        {
+            cout << "Array at "<< i << " contains tree with head node: " << test->array[i]->item->id << endl;
+        }
+    }
+
+    bin_test = test->popMin();
+
+    cout << "****Popped: " << bin_test->item->id << " with key: "<< bin_test->key <<"****" << endl;
+
+    ptr = test->head;
     
+    cout << "Root Level is: ";
+    while (ptr != nullptr)
+    {
+        cout << "Node: " <<  ptr->item->id<< " key: "<< ptr->key << " deg:" << ptr->degree << "<->";
+        ptr = ptr->rsibling;
+    }
+    cout << endl;
+
+    if (test->minRoot != nullptr)
+    cout << "MinRoot is: " << test->minRoot->item->id << " with key: " << test->minRoot->key << endl;
+
+    // Printing array values
+    for (int i = 0; i< 5; i++)
+    {
+        if (test->array[i] != nullptr)
+        {
+            cout << "Array at "<< i << " contains tree with head node: " << test->array[i]->item->id << endl;
+        }
+    }
 
 
-    // test->popMin();
-
-    // ptr = test->head;
-
-
-    // while (ptr != nullptr)
+    //while (ptr != nullptr)
     // {
     //     cout << "Node: " <<  ptr->item->id<< " deg:" << ptr->degree << "<->";
     //     ptr = ptr->rsibling;
     // }
     // cout << endl;
-
+/******************************************************************************
+ * OLD TESTS
+ * ****************************************************************************/
 
     //bin_test = test->linkTrees(test->head, test->head->rsibling);
 
