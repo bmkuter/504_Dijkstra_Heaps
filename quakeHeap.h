@@ -43,6 +43,7 @@ public:
        roots.insert(newnode);
        elements++;
        mapping.insert(item->position, newnode);
+       heights[0]++;
        if(min == NULL){min = newnode;}
        else if(newnode->val < min->val;){min = newnode;}
        return;
@@ -81,6 +82,7 @@ public:
        for(int i = 0; i < roots.size(); i++){
            if(roots[i]->val < min->val){min = roots[i];}
        }
+       //TODO: MERGE TREES OF EQUAL HEIGHTS
        //TODO: CHECK HEIGHTS AGAINST ALPHA AND QUAKE
        return toReturn;
    };
