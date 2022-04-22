@@ -1,97 +1,134 @@
 #ifndef QUAKEHEAP_H_
 #define QUAKEHEAP_H_
 
+#include <vector>
+#include <unordered_map>
+
 using namespace std;
 
 const int MAX_SIZE = 200000; //the maximum amount of elements our heap should have.
+const int LOGMAX_SIZE = 32;
+
+class node
+{
+public:
+    node(){};
+    node * left;
+    node * right;
+    node * parent;
+    int val;
+    int height;
+    Object * item;
+};
 
 template <typename Object>
 class quakeHeap
 {
 public:
-   Heap(){
+   Heap(float inalpha){
       elements = 0;
+      alpha = inalpha;
+      min = NULL;
+      for(int i = 0; i < LOGMAX_SIZE; i++;){heights[i] = 0;}
    };
-   void insert(Object* item){// Add the object pointer item to the heap
-   //assert(!IsFull());
-	   if (elements >= MAX_SIZE){
-		   cout << "Heap is full; can't insert "<< endl;
-			return;
-	   }
-      array[elements] = item; //elements array position after the last
-      item->position=elements;
-      elements++;
-      upHeap(elements-1);
-   };
-   Object* remove_min(){
-      if (elements ==0){
-		   cout << "empty heap error, can't delete"<<endl;
-	   }
-      elements--; //update the amount of elements in heap
-      Object* temp = array[0];
-      if(elements != 0){ //if we didn't delete the root
-         array[0]=array[elements];
-         array[0]->position = 0;
-         downHeap(0);
-      }
-      temp->position=-1; //out of the heap
-      return temp;
 
-   };       // Remove the smallest element in the heap & restructure heap
+   void insert(Object* item){
+       node * newnode = new node;
+       newnode->val = item->key;
+       newnode->item = item;
+       newnode->height = 0;
+       newnode->left = NULL;
+       newnode->right = NULL;
+       newnode->parent = NULL;
+       roots.insert(newnode);
+       elements++;
+       mapping.insert(item->position, newnode);
+       if(min == NULL){min = newnode;}
+       else if(newnode->val < min->val;){min = newnode;}
+       return;
+   };       
 
-   void decreaseKey(int pos, int val)// Decreases Key in pos to val
+   void decreaseKey(int pos, int val)
    {
-      array[pos]->key = val;
-      upHeap(pos);
+       node * found = (mapping.find(pos))->second;
+       node->val = val;
+       roots.insert(node);
+       if(val < min->val){minptr = node;}
+       if(node->parent == NULL){}
+       else if(node == node->parent->left){node->parent->left = NULL;}
+       else{node->parent->right = NULL;}
+       fixHeights(node->parent);
+       node->parent = NULL;
+       return;
    };
 
+   Object * deleteMin(){
+       Object * toReturn = min->item;
+       node * cnode = min;
+       while(cnode != NULL){
+           roots.insert(cnode)
+           cnode = cnode->right;
+           if(cnode != NULL){
+               cnode->parent->right = NULL;
+               cnode->parent = NULL;
+           }
+       }
+       while(mergeTrees()){}
+       elements--;
+       heights[min->height]--;
+       delete min;
+       min = roots[0];
+       for(int i = 0; i < roots.size(); i++){
+           if(roots[i]->val < min->val){min = roots[i];}
+       }
+       //TODO: CHECK HEIGHTS AGAINST ALPHA AND QUAKE
+       return toReturn;
+   };
 
-   bool IsEmpty() const { return (elements <= 0);};
+   bool IsEmpty() const {return (elements <= 0);};
    bool IsFull() const {return (elements >=MAX_SIZE );};
    int count() const {return elements;};
-   Object* value(int pos) const{ //return a pointer to an object in heap position
-	   if (pos >= elements){
-		   cout << "Out of range of heap " << pos << "elements " << elements << endl;
-	   }
-      return (array[pos]);
-   };
+   
 protected:
-   Object* array[MAX_SIZE];
-   int elements;       //  how many elements are in the heap
+   node * min;
+   vector<node *> roots;
+   unordered_map<int, node *> mapping;
+   int elements;
+   int heights[LOGMAX_SIZE];
+   float alpha;
 private:
-   void downHeap(int root){// starting with element in position int, sift it down the heap
-                       // until it is in final min-heap position
-      Object* item = array[root];
-      if (elements==1) return; // no children...
-      int child = 2*root+1;
-      do{
-	      if (child < (elements-1)){
-		      if ( array[child+1]->key < array[child]->key ) child++; // pick smaller
-         }
-	      if ( array[child]->key < item->key ){//swap
-		      array[root]=array[child];
-            array[child]->position = root;
-		      root  = child;
-		      child = 2*root+1;
-	      } else break; // found my place
-      } while (child < elements);
-      array[root]=item;
-      item->position = root;
-   };
-
-   void upHeap(int new_pos){// starting with element in position int, sift it up the heap
-                       // until it is in final min-heap position
-      Object* item = array[new_pos];
-      int parent = (new_pos-1)/2;
-      while((new_pos != 0) && (item->key < array[parent]->key)) //loop while the item has not become the main root, and while its value is less than its parent
-      {
-	      array[new_pos]=array[parent];
-         array[parent]->position=new_pos;
-	      new_pos = parent;
-	      parent = (new_pos - 1)/2;
-      }
-      array[new_pos]=item;
-      item->position=new_pos;
-   };
+   
+    node * join(node * first, node * second){
+        if(first->val < second->val){
+            node * temp = first->left;
+            first->left = second;
+            second->right = temp;
+            if(first->height < LOGMAX_SIZE){
+                heights[first->height]--;
+                first->height += 1;
+                heights[first->height]++;
+            }
+            return first;
+        }
+        else{
+            node * temp = second->left;
+            second->left = first;
+            first->right = temp;
+            if(second->height < LOGMAX_SIZE){
+                heights[second->height]--;
+                second->height += 1;
+                heights[second->height]++;
+            }
+            return second;
+        }
+    };
+   
+    int mergeTrees();
+    
+    void fixHeights(node * start){};
+    
+    int quake(node * start);
+    
+    
 };
 #endif
