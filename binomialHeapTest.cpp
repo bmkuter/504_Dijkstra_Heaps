@@ -11,6 +11,7 @@ typedef struct node{
 
 int main(){
 
+    // Create a heap and some nodeitem objects to store
     BinomialHeap<nodeitem> * test = new BinomialHeap<nodeitem>;
     nodeitem* nodeTest = new nodeitem;
     nodeitem* nodeTest2 = new nodeitem;
@@ -23,7 +24,7 @@ int main(){
 
     nodeTest->first = nullptr;
     nodeTest->id = 1;
-    nodeTest->key = 0;
+    nodeTest->key = 7;
     nodeTest->P = 1;
     nodeTest->position = 0;
 
@@ -57,12 +58,17 @@ int main(){
     test->insert(nodeTest2, nodeTest2->key);
     test->insert(nodeTest5, nodeTest5->key);
 
+    cout << "Decreasing key of 1 to 0" << endl;
+    test->decreaseKey(1, 0);
+
     cout << "Head is: " << test->head->item->id << " with key: " << test->head->key <<  endl;
 
     //test->printHeap(test->head);
     
+    // For print tests
     bin_node<nodeitem>* ptr = test->head;
 
+    // Prints out root level
     cout << "Root Level is: ";
     while (ptr != nullptr)
     {
@@ -76,6 +82,9 @@ int main(){
     bin_test = test->popMin();
 
     cout << "****Popped: " << bin_test->item->id << " with key: "<< bin_test->key <<"****" << endl;
+
+    cout << "Decreasing key of 5 to 0" << endl;
+    test->decreaseKey(5,0);
 
     ptr = test->head;
    
@@ -125,9 +134,13 @@ int main(){
     cout << "Head is: " << test->head->item->id << " with key: " << test->head->key <<  endl;
     cout << "MinRoot is: " << test->minRoot->item->id << " with key: " << test->minRoot->key << endl;
 
-        cout << "****Testing popMin****"<< endl;
+    cout << "Heap size is: " << test->size << endl;
+
+    cout << "****Testing popMin****"<< endl;
 
     bin_test = test->popMin();
+
+    cout << "Heap size is: " << test->size << endl;
 
     cout << "****Popped: " << bin_test->item->id << " with key: "<< bin_test->key <<"****" << endl;
 
@@ -203,6 +216,7 @@ int main(){
         }
     }
 
+    cout << "Heap size is: " << test->size << endl;
 
     //while (ptr != nullptr)
     // {
