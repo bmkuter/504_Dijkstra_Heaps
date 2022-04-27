@@ -295,6 +295,7 @@ class BinomialHeap
             }
 
             bin_node<Object> * minPtr = this->minRoot;
+            bin_node<Object> * popped = this->minRoot;
             bin_node<Object> *ptr;
             bin_node<Object> *tempPtr;
             int minDegree = minPtr->degree;
@@ -410,7 +411,7 @@ class BinomialHeap
             }
             this->size--;
             this->node_list.erase(minPtr->item->id);
-            return minPtr;
+            return popped;
 
         }
 
@@ -418,8 +419,8 @@ class BinomialHeap
             cout << "***Decreasing " << node_id << " to " << value << "****" << endl;
             if(this->node_list.count(node_id))
             {
-                bin_node<Object>* node = this->node_list[node_id];
-                bin_node<Object>* parent, *temp;
+                bin_node<Object> *node = this->node_list[node_id];
+                bin_node<Object> *parent, *RPtr, *LPtr, *childPtr ;
                 int temp_degree;
                 parent = node->parent;
                 node->key = value;
@@ -427,49 +428,61 @@ class BinomialHeap
 
                 while ((parent != nullptr) && (parent->key > node->key))
                 {
-                    // swap siblings
-                    temp = node->lsibling;
+                    LPtr = node->lsibling;
+                    RPtr = node->rsibling;
+                    childPtr = node->child;
+
                     node->lsibling = parent->lsibling;
-                    if (node->lsibling != nullptr)
-                    {
+                    if (node->lsibling != nullptr){
                         node->lsibling->rsibling = node;
                     }
-                    parent->lsibling = temp;
-                    if (temp != nullptr)
-                    {
-                        temp->rsibling = parent;
-                    }
 
-                    temp = node->rsibling;
                     node->rsibling = parent->rsibling;
-                    if (node->rsibling != nullptr)
-                    {
+                    if (node->rsibling != nullptr){
                         node->rsibling->lsibling = node;
                     }
-                    parent->rsibling = temp;
-                    if (temp != nullptr)
-                    {
-                        temp->lsibling = parent;
+
+                    parent->lsibling = LPtr;
+                    if (parent->lsibling != nullptr){
+                        parent->lsibling->rsibling = parent;
                     }
 
-                    // traverse all children of parent and change parent to node
-                    temp = parent->child;
-                    while (temp != nullptr)
-                    {
-                        if (temp != parent)
-                        {
-                        temp->parent = node;
-                        }
-                        temp = temp->rsibling;
+                    parent->rsibling = RPtr;
+                    if (parent->rsibling != nullptr){
+                        parent->rsibling->lsibling = parent;
                     }
-                    temp = node->child;
-                    if (parent->child == node){
-                        node->child = parent;
-                    }
-                    else{
+
+                    if (parent->child != node){
                         node->child = parent->child;
                     }
-                    parent->child = temp;
+                    else{
+                        node->child = parent;
+                    }
+
+                    node->parent = parent->parent;
+                    if ((node->parent != nullptr) && (node->parent->child == parent)){
+                        node->parent->child = node;
+                    }
+                    parent->parent = node;
+                    while (LPtr != nullptr){
+                        LPtr->parent = node;
+                        LPtr = LPtr->lsibling;
+                    }
+                    while (RPtr != nullptr){
+                        RPtr->parent = node;
+                        RPtr = RPtr->rsibling;
+                    }
+                    // Move head pointer to node if parent was head
+                    if (this->head == parent)
+                    {
+                        this->head = node;
+                    }
+
+                    parent->child = childPtr;
+                    while (childPtr != nullptr){
+                        childPtr->parent = parent;
+                        childPtr = childPtr->rsibling;
+                    }
 
                     // If parent exists in the root trees array, swap the new pointer in the slot 
                     if (this->array[parent->degree] == parent)
@@ -478,19 +491,58 @@ class BinomialHeap
                     temp_degree = node->degree;
                     node->degree = parent->degree;
                     parent->degree = temp_degree;
-                
-                    // Move head pointer to node if parent was head
-                    if (parent == this->head)
-                    {
-                        this->head = node;
-                    }
 
-                    node->parent = parent->parent;
-                    // if the new parent's child was the old parent, change the new parent's pointer to node
-                    if ((node->parent != nullptr) && (node->parent->child == parent))
-                        node->parent->child = node;
-                    parent->parent = node;
                     parent = node->parent;
+                    
+                    // // swap siblings
+                    // temp = node->lsibling;
+                    // node->lsibling = parent->lsibling;
+                    // if (node->lsibling != nullptr)
+                    // {
+                    //     node->lsibling->rsibling = node;
+                    // }
+                    // parent->lsibling = temp;
+                    // if (temp != nullptr)
+                    // {
+                    //     temp->rsibling = parent;
+                    // }
+
+                    // temp = node->rsibling;
+                    // node->rsibling = parent->rsibling;
+                    // if (node->rsibling != nullptr)
+                    // {
+                    //     node->rsibling->lsibling = node;
+                    // }
+                    // parent->rsibling = temp;
+                    // if (temp != nullptr)
+                    // {
+                    //     temp->lsibling = parent;
+                    // }
+
+                    // // traverse all children of parent and change parent to node
+                    // temp = parent->child;
+                    // while (temp != nullptr)
+                    // {
+                    //     if (temp != node)
+                    //     {
+                    //     temp->parent = node;
+                    //     }
+                    //     temp = temp->rsibling;
+                    // }
+                    // temp = node->child;
+                    // if (parent->child == node){
+                    //     node->child = parent;
+                    // }
+                    // else{
+                    //     node->child = parent->child;
+                    // }
+                    // parent->child = temp;
+                    
+                    // node->parent = parent->parent;
+                    // // if the new parent's child was the old parent, change the new parent's pointer to node
+                    // if ((node->parent != nullptr) && (node->parent->child == parent))
+                    //     node->parent->child = node;
+                    // parent->parent = node;
                 }
                 // Get the new minimum
                 this->findMin();
