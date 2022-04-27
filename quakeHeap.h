@@ -9,6 +9,7 @@ using namespace std;
 const int MAX_SIZE = 200000; //the maximum amount of elements our heap should have.
 const int LOGMAX_SIZE = 64;
 
+template <typename Object>
 class node
 {
 public:
@@ -21,10 +22,11 @@ public:
     Object * item;
 };
 
+template <typename Object>
 class nodeList
 {
 public:
-    node * data;
+    node<Object> * data;
     nodeList * next;
     nodeList * prev;
 };
@@ -33,16 +35,16 @@ template <typename Object>
 class quakeHeap
 {
 public:
-   Heap(float inalpha){
+   quakeHeap(float inalpha){
       elements = 0;
       alpha = inalpha;
       min = NULL;
       roots = 0;
-      for(int i = 0; i < LOGMAX_SIZE; i++;){heights[i] = 0;}
+      for(int i = 0; i < LOGMAX_SIZE; i++){heights[i] = 0;}
    };
 
    void insert(Object* item){
-       node * newnode = new node;
+       node<Object> * newnode = new node<Object>;
        newnode->val = item->key;
        newnode->item = item;
        newnode->height = 0;
@@ -52,7 +54,7 @@ public:
        elements++;
        mapping.insert(item->position, newnode);
        heights[0]++;
-       nodeList * newnodeList = new nodeList;
+       nodeList<Object> * newnodeList = new nodeList<Object>;
        newnodeList->data = newnode;
        newnodeList->prev = NULL;
        newnodeList->next = NULL;
@@ -64,21 +66,21 @@ public:
 
    void decreaseKey(int pos, int val)
    {
-       node * found = (mapping.find(pos))->second;
+       node<Object> * found = (mapping.find(pos))->second;
        found->val = val;
-       nodeList * newList = rootInsert(found);
+       nodeList<Object> * newList = rootInsert(found);
        if(val < min->val){min = newList;}
-       if(node->parent == NULL){}
-       else if(node == node->parent->left){node->parent->left = NULL;}
-       else{node->parent->right = NULL;}
-       fixHeights(node->parent);
-       node->parent = NULL;
+       if(found->parent == NULL){}
+       else if(found == found->parent->left){found->parent->left = NULL;}
+       else{found->parent->right = NULL;}
+       fixHeights(found->parent);
+       found->parent = NULL;
        return;
    };
 
    Object * deleteMin(){
        Object * toReturn = min->data->item;
-       node * cnode = min->data->left;
+       node<Object> * cnode = min->data->left;
        rootsInsert(cnode);
        while(cnode->right != NULL){
            rootsInsert(cnode->right);
@@ -97,7 +99,7 @@ public:
        rootRemove(cnode);
        delete cnode;
        cnode = min->next;
-       nodeList * start = min
+       nodeList<Object> * start = min;
        while(cnode != start && cnode != NULL){
            if(cnode->data->val < min->data->val){min = cnode;}
            cnode = cnode->next;
@@ -118,17 +120,17 @@ public:
    int count() const {return elements;};
    
 protected:
-   nodeList * min;
-   unordered_map<int, node *> mapping;
+   nodeList<Object> * min;
+   unordered_map<int, node<Object> *> mapping;
    int roots;
    int elements;
    int heights[LOGMAX_SIZE];
    float alpha;
 private:
    
-    node * join(node * first, node * second){
+    node<Object> * join(node<Object> * first, node<Object> * second){
         if(first->val < second->val){
-            node * temp = first->left;
+            node<Object> * temp = first->left;
             first->left = second;
             second->right = temp;
             second->parent = first;
@@ -140,7 +142,7 @@ private:
             return first;
         }
         else{
-            node * temp = second->left;
+            node<Object> * temp = second->left;
             second->left = first;
             first->right = temp;
             first->parent = second;
@@ -154,12 +156,12 @@ private:
     };
     
     bool mergeTrees(){
-        nodeList * foundHeights[LOGMAX_SIZE]
+        nodeList<Object> * foundHeights[LOGMAX_SIZE];
         int i;
         bool del = false;
         bool found = false;
-        node * lesser;
-        nodeList * current = min;
+        node<Object> * lesser;
+        nodeList<Object> * current = min;
         for(i = 0; i < LOGMAX_SIZE; i++){foundHeights[i] = NULL;}
         
         do{
@@ -180,9 +182,9 @@ private:
         return found;
     };
     
-    nodeList * rootInsert(node * toInsert){
+    nodeList<Object> * rootInsert(node<Object> * toInsert){
         
-        nodeList * newInsert = new nodeList;
+        nodeList<Object> * newInsert = new nodeList<Object>;
         newInsert->data = toInsert;
         newInsert->prev = min;
         
@@ -199,8 +201,8 @@ private:
         return newInsert;
     };
     
-    void rootRemove(nodeList * toRemove){
-        nodeList * next = toRemove->next, * prev = toRemove->prev;
+    void rootRemove(nodeList<Object> * toRemove){
+        nodeList<Object> * next = toRemove->next, * prev = toRemove->prev;
         if(next != NULL && prev != NULL && prev != next){
             toRemove->next->prev = prev;
             toRemove->prev->next = next;
@@ -210,7 +212,7 @@ private:
         return;
     };
     
-    int fixHeights(node * start){
+    int fixHeights(node<Object> * start){
         if(start->left == NULL && start->right == NULL){
             start->height = 0;
             return 0;
@@ -223,11 +225,11 @@ private:
     };
     
     void quake(int toQuake){
-        nodeList * cnode = min->right;
-        node * dnode;
+        nodeList<Object> * cnode = min->right;
+        node<Object> * dnode;
         while(cnode != min && cnode != NULL){
             if(cnode->data->height > toQuake){
-                dnode = cnode->data->left
+                dnode = cnode->data->left;
                 while(cnode->right != NULL){
                    rootsInsert(cnode->right);
                    cnode = cnode->right;
