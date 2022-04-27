@@ -57,10 +57,8 @@ public:
        newnodeList->prev = NULL;
        newnodeList->next = NULL;
        if(min == NULL){min = newnodeList;}
-       else if(newnode->val < min->data->val;){min = newnodeList;}
-       else{
-           
-       }
+       else{rootInsert(newnodeList);}
+       if(newnode->val < min->data->val){min = newnodeList;}
        return;
    };       
 
@@ -79,17 +77,19 @@ public:
    };
 
    Object * deleteMin(){
-       Object * toReturn = min->item;
-       nodeList * cnode = min;
-       while(cnode != NULL){
-           roots.insert(cnode)
+       Object * toReturn = min->data->item;
+       node * cnode = min->data->left;
+       rootsInsert(cnode);
+       while(cnode->right != NULL){
+           rootsInsert(cnode->right);
            cnode = cnode->right;
-           if(cnode != NULL){
-               cnode->parent->right = NULL;
-               cnode->parent = NULL;
-           }
+           cnode->parent->right = NULL;
+           cnode->parent = NULL;
+           fixHeights(cnode);
        }
-       while(mergeTrees()){}
+       rootsInsert(cnode);
+       fixHeights(cnode);
+       cnode->parent = NULL;
        elements--;
        heights[min->height]--;
        cnode = min;
@@ -102,9 +102,13 @@ public:
            if(cnode->data->val < min->data->val){min = cnode;}
            cnode = cnode->next;
        }
-       //TODO: MERGE TREES OF EQUAL HEIGHTS
        while(mergeTrees()){}
-       //TODO: CHECK HEIGHTS AGAINST ALPHA AND QUAKE
+       for(int i = 0; i < LOGMAX_SIZE - 1; i++){
+           if(heights[i+1] > alpha*heights[i]){
+               quake(i);
+               break;
+           }
+       }
        while(mergeTrees()){}
        return toReturn;
    };
@@ -127,6 +131,7 @@ private:
             node * temp = first->left;
             first->left = second;
             second->right = temp;
+            second->parent = first;
             if(first->height < LOGMAX_SIZE && first->height <= second->height){
                 heights[first->height]--;
                 first->height = second->height + 1;
@@ -138,6 +143,7 @@ private:
             node * temp = second->left;
             second->left = first;
             first->right = temp;
+            first->parent = second;
             if(second->height < LOGMAX_SIZE && second->height <= first->height){
                 heights[second->height]--;
                 second->height = first->height + 1;
@@ -145,10 +151,7 @@ private:
             }
             return second;
         }
-        //REMOVE FROM ROOTS LIST
     };
-   
-    //TODO: These
     
     bool mergeTrees(){
         nodeList * foundHeights[LOGMAX_SIZE]
@@ -171,20 +174,74 @@ private:
             current = current->next;
             if(del){
                 rootRemove(current->prev);
-                delete current;
             }
         }while(current != min && current != NULL);
         
         return found;
     };
     
-    nodeList * rootInsert(node * toInsert){};
+    nodeList * rootInsert(node * toInsert){
+        
+        nodeList * newInsert = new nodeList;
+        newInsert->data = toInsert;
+        newInsert->prev = min;
+        
+        if(min->next != NULL){
+            newInsert->next = min->next;
+            min->next->prev = newInsert;
+            min->next = newInsert;
+        }
+        else{
+            min->next = newInsert;
+        }
+        if(min->prev)
+        
+        return newInsert;
+    };
     
-    void rootRemove(nodeList * toRemove){};
+    void rootRemove(nodeList * toRemove){
+        nodeList * next = toRemove->next, * prev = toRemove->prev;
+        if(next != NULL && prev != NULL && prev != next){
+            toRemove->next->prev = prev;
+            toRemove->prev->next = next;
+        }
+        
+        delete toRemove;
+        return;
+    };
     
-    void fixHeights(node * start){};
+    int fixHeights(node * start){
+        if(start->left == NULL && start->right == NULL){
+            start->height = 0;
+            return 0;
+        }
+        int left, right;
+        left = fixHeights(start->left);
+        right = fixHeights(start->right);
+        (left > right)?(start->height = left + 1):(start->height = right+1);
+        return start->height;
+    };
     
-    int quake(node * start){};
+    void quake(int toQuake){
+        nodeList * cnode = min->right;
+        node * dnode;
+        while(cnode != min && cnode != NULL){
+            if(cnode->data->height > toQuake){
+                dnode = cnode->data->left
+                while(cnode->right != NULL){
+                   rootsInsert(cnode->right);
+                   cnode = cnode->right;
+                   cnode->parent->right = NULL;
+                   cnode->parent = NULL;
+                   fixHeights(cnode);
+                }
+                rootsInsert(cnode);
+                cnode->parent = NULL;
+                fixHeights(cnode);
+            }
+            cnode = cnode->next;
+        }
+    };
     
 };
 #endif
