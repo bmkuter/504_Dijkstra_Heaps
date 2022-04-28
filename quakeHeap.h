@@ -52,7 +52,7 @@ public:
        newnode->right = NULL;
        newnode->parent = NULL;
        elements++;
-       mapping.insert(item->position, newnode);
+       mapping.insert({item->position, newnode});
        heights[0]++;
        nodeList<Object> * newnodeList = new nodeList<Object>;
        newnodeList->data = newnode;
