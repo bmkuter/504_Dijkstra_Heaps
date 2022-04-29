@@ -54,22 +54,16 @@ public:
        elements++;
        mapping.insert({item->position, newnode});
        heights[0]++;
-       nodeList<Object> * newnodeList = new nodeList<Object>;
-       newnodeList->data = newnode;
-       newnodeList->prev = NULL;
-       newnodeList->next = NULL;
-       if(min == NULL){min = newnodeList;}
-       else{rootInsert(newnodeList);}
+       nodeList<Object> * newnodeList;
+       newnodeList = rootInsert(newnode);
        if(newnode->val < min->data->val){min = newnodeList;}
        return;
    };       
 
-   void decreaseKey(int pos, int val)
+   void decreaseKey(int pos, int valin)
    {
        node<Object> * found = (mapping.find(pos))->second;
-       found->val = val;
-       nodeList<Object> * newList = rootInsert(found);
-       if(val < min->val){min = newList;}
+       found->val = valin;
        if(found->parent == NULL){}
        else if(found == found->parent->left){found->parent->left = NULL;}
        else{found->parent->right = NULL;}
@@ -81,28 +75,27 @@ public:
    Object * deleteMin(){
        Object * toReturn = min->data->item;
        node<Object> * cnode = min->data->left;
-       rootsInsert(cnode);
+       rootInsert(cnode);
        while(cnode->right != NULL){
-           rootsInsert(cnode->right);
+           rootInsert(cnode->right);
            cnode = cnode->right;
            cnode->parent->right = NULL;
            cnode->parent = NULL;
            fixHeights(cnode);
        }
-       rootsInsert(cnode);
+       rootInsert(cnode);
        fixHeights(cnode);
        cnode->parent = NULL;
        elements--;
-       heights[min->height]--;
-       cnode = min;
+       heights[min->data->height]--;
+       nodeList<Object> * dnode = min;
        min = min->next;
-       rootRemove(cnode);
-       delete cnode;
-       cnode = min->next;
+       rootRemove(dnode);
+       dnode = min->next;
        nodeList<Object> * start = min;
-       while(cnode != start && cnode != NULL){
-           if(cnode->data->val < min->data->val){min = cnode;}
-           cnode = cnode->next;
+       while(dnode != start && dnode != NULL){
+           if(dnode->data->val < min->data->val){min = dnode;}
+           dnode = dnode->next;
        }
        while(mergeTrees()){}
        for(int i = 0; i < LOGMAX_SIZE - 1; i++){
@@ -166,12 +159,15 @@ private:
         
         do{
             if(foundHeights[current->data->height] != NULL){
-                lesser = join(current->data->height, foundHeights[current->data->height]);
-                (lesser == current)?(rootRemove(foundHeights[current->data->height])):(del = true);
+   		i = current->data->height;
+		lesser = join(current->data, foundHeights[current->data->height]->data);       
+		if(lesser != current->data){rootRemove(foundHeights[current->data->height]);}
+		else{del = true;}
                 found = true;
+		foundHeights[i] = NULL;
             }
             else{
-                foundHeights[current->data->height] = i;
+                foundHeights[current->data->height] = current;
             }
             current = current->next;
             if(del){
@@ -187,17 +183,20 @@ private:
         nodeList<Object> * newInsert = new nodeList<Object>;
         newInsert->data = toInsert;
         newInsert->prev = min;
-        
-        if(min->next != NULL){
+        if(min == NULL){min = newInsert;}
+        else if(min->next != NULL){
             newInsert->next = min->next;
             min->next->prev = newInsert;
             min->next = newInsert;
         }
         else{
             min->next = newInsert;
-        }
-        if(min->prev)
+            min->prev = newInsert;
+	    newInsert->next = min;
+	}
         
+	if(newInsert->data->val < min->data->val){min = newInsert;}
+
         return newInsert;
     };
     
@@ -225,21 +224,21 @@ private:
     };
     
     void quake(int toQuake){
-        nodeList<Object> * cnode = min->right;
+        nodeList<Object> * cnode = min->next;
         node<Object> * dnode;
         while(cnode != min && cnode != NULL){
             if(cnode->data->height > toQuake){
                 dnode = cnode->data->left;
-                while(cnode->right != NULL){
-                   rootsInsert(cnode->right);
-                   cnode = cnode->right;
-                   cnode->parent->right = NULL;
-                   cnode->parent = NULL;
-                   fixHeights(cnode);
+                while(dnode->right != NULL){
+                   rootInsert(dnode->right);
+                   dnode = dnode->right;
+                   dnode->parent->right = NULL;
+                   dnode->parent = NULL;
+                   fixHeights(dnode);
                 }
-                rootsInsert(cnode);
-                cnode->parent = NULL;
-                fixHeights(cnode);
+                rootInsert(dnode);
+                dnode->parent = NULL;
+                fixHeights(dnode);
             }
             cnode = cnode->next;
         }
