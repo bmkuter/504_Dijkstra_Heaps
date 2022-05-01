@@ -3,20 +3,20 @@
 
 #include <iostream>
 #include <list>
-#include<algorithm>
+#include <algorithm>
+#include <unordered_map>
+
 
 using namespace std;
 
-const int MAX_SIZE = 200000;
-
  template <class Object>
  struct bin_node{
-        bin_node *parent;              // Pointer to parent node
-        bin_node *child;               // Pointer to child node
+        bin_node *parent;               // Pointer to parent node
+        bin_node *child;                // Pointer to child node
         bin_node *lsibling, *rsibling;  // Pointer to left and right sibling nodes
-        int key;                       // Key value for priority
-        int degree;                    // Degree of the node
-        Object * item;                 // Storing the pointer to the <Object>
+        int key;                        // Key value for priority
+        int degree;                     // Degree of the node
+        Object * item;                  // Storing the pointer to the <Object>
  };
 
 
@@ -30,10 +30,11 @@ class BinomialHeap
 
     public:
         /* MAKE PRIVATE AFTER TESTING */
-        bin_node<Object> * head;              // Points to the root of the leftmost binomial tree
-        bin_node<Object> * minRoot;           // Points to the root of the tree with smallest key
-        bin_node<Object> * array[MAX_SIZE];   // To keep track of degree for merging
-        int size;                             // Number of elements in the Heap
+        bin_node<Object> * head;        // Points to the root of the leftmost binomial tree
+        bin_node<Object> * minRoot;     // Points to the root of the tree with smallest key
+        bin_node<Object> * array[40];   // To keep track of degree for merging does not support degrees larger than 2^40
+        unordered_map<int, bin_node<Object>*> node_list;
+        int size;                       // Number of elements in the Heap
 
         // Heap constructor initializes all pointers to nullptr and size to 0
         BinomialHeap()
@@ -89,6 +90,9 @@ class BinomialHeap
             node->item = item;
             node->degree = 0;
             node->child = node->parent = node->lsibling = node->rsibling = nullptr;
+            this->node_list[item->id] = node; //Insert into map
+
+            cout << "*******Inserting " << item->id << "*******" << endl;
 
             // If the Heap is empty just add it as the first element of the Heap
             if (this->isEmpty())
@@ -116,8 +120,7 @@ class BinomialHeap
                             Linking/Merging
 *************************************************************************************/
         
-
-        /* A helper function to merge two trees of the same degree
+/* A helper function to merge two trees of the same degree
             input: two bin_nodes* to merge
             output: pointer to the parent node 
             complexity: O(1)*/
@@ -125,154 +128,114 @@ class BinomialHeap
         {
             // Make the root with the greater key the child of the other root
             if(tree1->key < tree2->key){
-                    /* FOR TEST REMOVE BEFORE SUBMISSION */
+                    /* FOR TEST REMOVE BEFORE SUBMISSION*/
                     cout << "Got " << tree2->item->id << ">" << tree1->item->id << " case" << endl;
-                    /* FOR TEST REMOVE BEFORE SUBMISSION */
 
-                    // Remove tree2 from root level list by linking Lsib of tree2 to Rsib of tree2
-                    if(tree2->lsibling != nullptr)
-                    {
-                        tree2->lsibling->rsibling = tree2->rsibling;
-                    }
-                    else //if (tree2->rsibling != nullptr)
-                    {
-                        cout << "Here's the error" << endl;
-                        tree2->rsibling->lsibling = tree2->lsibling;
-                    }
-
-                    if (tree2->rsibling != nullptr)
-                    {
-                        tree2->rsibling->lsibling = tree2->lsibling;
-                    }
-                    else
-                    {
-                        tree2->lsibling->rsibling = tree2->rsibling;
-                    }
                     // Make tree2 leftmost child of tree1 and link current child node to new child
                     
                     tree2->parent = tree1;
                     tree2->rsibling = tree1->child;
-                    if (tree2->rsibling != nullptr)
-                    {
-                        tree2->rsibling->lsibling = tree2;
-                    }
                     tree2->lsibling = nullptr;
                     tree1->child = tree2;
                     tree1->degree += 1;
-                    // Move head pointer if tree2 was head
-                    if (this->head == tree2)
-                    {
-                        this->head = tree1;
-                    }
-
                     return tree1;
             }
             else
             {
-                    /* FOR TEST REMOVE BEFORE SUBMISSION */
+                    /* FOR TEST REMOVE BEFORE SUBMISSION*/
                     cout << "Got " << tree1->item->id << ">" << tree2->item->id << " case" << endl;
-                    /* FOR TEST REMOVE BEFORE SUBMISSION */
+                    /*FOR TEST REMOVE BEFORE SUBMISSION */
 
-                    // Remove tree1 from root level list by linking Lsib of tree1 to Rsib of tree1
-                    if(tree1->lsibling != nullptr)
-                    {
-                        tree1->lsibling->rsibling = tree1->rsibling;
-                    }
-                    else
-                    {
-                        tree1->rsibling->lsibling = nullptr;
-                    }
-                    if (tree1->rsibling != nullptr)
-                    {
-                        tree1->rsibling->lsibling = tree1->lsibling;
-                    }
-                    else
-                    {
-                        tree1->lsibling->rsibling = nullptr;
-                    }
+                    
                     // Make tree1 leftmost child of tree2 and link current child node to new child
                     tree1->parent = tree2;
                     tree1->rsibling = tree2->child;
-                    if (tree1->rsibling != nullptr)
-                    {
-                        tree1->rsibling->lsibling = tree1;
-                    }
                     tree1->lsibling = nullptr;
                     tree2->child = tree1;
                     tree2->degree += 1;
                     // Move head pointer
-                    if (this->head == tree1)
-                    {
-                        this->head = tree2;
-                    }
-
                     return tree2;
             }
         }
 
-        /* Traverses root level of heap and merges trees of the same degree until all the trees are of different degrees
-            input (none): starts at heap's head
-            output(void): operations done on same heap
-            Worst case complexity: O(n) -> Amortized complexity: O(logn)
-        */
-        void merge()
-        {
+        void merge(){// replaces old merge, assumes clean array, does no maintenance on the way, assumes min has been removed and children are in the list 
             bin_node<Object>* ptr = this->head;
+            bin_node<Object>* ptr1, *nextptr;
             int degree;
+            // first, zero out array to avoid complications 
 
+
+            //This is probably not needed but left here.
+            // for (int i = 0; i< 40; i++){
+            //     this->array[i] = nullptr;
+            // }
+
+            int max_degree = -1;
+       
             cout << "Beginning merge from head: " << ptr->item->id << endl;
             
-            while (ptr != nullptr)
-            {   
-                // Get current tree's degree
-                degree = ptr->degree;
-                // Check the array for a tree of the same degree if it exists, 
-                if (this->array[degree] != nullptr)
-                {
-                    cout << "Merging two trees with degree: " << degree << endl;
-                    // Merge the two nodes of same degree and set ptr to new tree, re-enter while loop with new ptr which has degree+1
-                    ptr = linkTrees(this->array[degree], ptr);
-                    // Clear the array slot for old degree
-                    this->array[degree] = nullptr;
+            while (ptr != nullptr){   
+                nextptr = ptr->rsibling;
+                if (ptr == this->minRoot){ // skip this and go on to next!  This deletes the minRoot
+                    ptr = nextptr;
+                    continue; 
                 }
-                // Otherwise if the array slot is null, add the ptr to the array and move the pointer to the right
-                else
-                {
-                    cout << "Adding trees with degree: " << degree << " to array." << endl;
-                    this->array[degree] = ptr;
-                    ptr = ptr->rsibling;
+                ptr1 = ptr; 
+                while (ptr1 != nullptr){ //use ptr1 for recursive merging
+                    degree = ptr1->degree;
+                    if (this->array[degree] != nullptr){
+                        cout << "Merging two trees with degree: " << degree << endl;
+                        // Merge the two nodes of same degree and set ptr to new tree, re-enter while loop with new ptr which has degree+1
+                        ptr1 = linkTrees(this->array[degree], ptr1); 
+                        this->array[degree]=nullptr;
+                    } else {
+                        cout << "Adding trees with degree: " << degree << " id "<< ptr1->item->id << "to array." << endl;
+                        this->array[degree] = ptr1;
+                        if (ptr1->degree > max_degree) max_degree = ptr1->degree;  // keeps track of largest non-null array for reconstituting 
+                        break;                  
+                    }
+                }
+                ptr = nextptr;  // get next from list of roots 
+            }
+            // Now, reconstitute the list of heads from the array
+            if (max_degree < 0){ // empty root list!  return;
+                return;
+            }
+            ptr= this->array[max_degree];
+            this->head = ptr;
+            this->array[max_degree]=nullptr;
+            if (ptr == nullptr){
+                cout << "Lost track of head, inserted null pointer " << endl; 
+                exit(3);
+            }
+            this->minRoot = ptr;
+            int minvalue = ptr->item->key;
+            ptr->lsibling = nullptr; ptr->rsibling = nullptr;
+            for (int i = max_degree-1; i >= 0; i--){
+                if (this->array[i] != nullptr){// insert this one too. 
+                    ptr = this->array[i];
+                    if (ptr->item->key < minvalue) {
+                        minvalue = ptr->item->key;
+                        this->minRoot = ptr; 
+                    }
+                    this->head->lsibling = ptr;
+                    ptr->lsibling = nullptr; 
+                    ptr->rsibling = this->head;
+                    this->head=ptr;
+                    this->array[i]=nullptr;  // clearing the array...
                 }
             }
-            // Reset array[] with values from root
-            for (int i = 0; i < 40; i++)
-            {
-                array[i] = nullptr;
-            }
-            ptr = this->head;
-            while (ptr != nullptr)
-            {
-                degree = ptr->degree;
-                this->array[degree] = ptr;
-                ptr = ptr->rsibling;
-            }
+
+        }
+
+        // Unimplemented (may not use)
+        void resetArray()
+        {
+            bin_node<Object>* ptr = this->head;
 
         }
         
-
-        void findMin(){
-            bin_node<Object>* ptr = this->head;
-            this->minRoot = ptr;
-            while (ptr != nullptr)
-            {
-                if(ptr->key < minRoot->key)
-                {
-                    minRoot = ptr;
-                }
-                ptr = ptr->rsibling;
-            }
-        }
-
-        bin_node<Object>* popMin()
+         bin_node<Object>* popMin1()
         {
             // If empty return nullptr
             if (this->isEmpty())
@@ -284,9 +247,11 @@ class BinomialHeap
             bin_node<Object> *ptr;
             bin_node<Object> *tempPtr;
             int minDegree = minPtr->degree;
+
+            cout << "***Popping " << minPtr->item->id << "****" << endl;
             
             // If the minPtr is in the array degree list, remove it
-            if (array[minDegree] == minPtr)
+            if (array[minDegree] == minPtr) // shguld never happen...
             {
                 array[minDegree] = nullptr;
             }
@@ -294,8 +259,9 @@ class BinomialHeap
             // Connect min's lsibling to its right sibling
             if (minPtr->lsibling != nullptr) 
             {
-                cout << "case1 minPtr->lsibling != nullptr" << endl;
-                cout << "Connecting: " << minPtr->lsibling->item->id << " to " << minPtr->rsibling->item->id << endl;
+                cout << "case 1 minPtr->lsibling != nullptr" << endl;
+                if (minPtr->rsibling != nullptr)
+                    cout << "Connecting: " << minPtr->lsibling->item->id << " to " << minPtr->rsibling->item->id << endl;
                 minPtr->lsibling->rsibling = minPtr->rsibling;
             }
             // Otherwise if lsibling is null and right sibling exists set it's lsibling to null
@@ -349,9 +315,9 @@ class BinomialHeap
                     minPtr->child = nullptr;
                     while (ptr != nullptr)
                     {
-                        /* FOR TEST REMOVE BEFORE SUBMISSION */
+                        /* FOR TEST REMOVE BEFORE SUBMISSION*/ 
                         cout << "ptr is to node: " << ptr->item->id << endl;
-                        /* FOR TEST REMOVE BEFORE SUBMISSION */
+                        /*FOR TEST REMOVE BEFORE SUBMISSION */
                         ptr->parent = nullptr;
                         this->head->lsibling = ptr;
                         tempPtr = this->head;
@@ -368,18 +334,14 @@ class BinomialHeap
                 ptr = ptr->rsibling;
                 }
                 cout << endl;
-                /* FOR TEST REMOVE BEFORE SUBMISSION */
+                /*FOR TEST REMOVE BEFORE SUBMISSION */
                 minPtr->rsibling = nullptr;
                 minPtr->lsibling = nullptr;
-                this->size--;
-                this->findMin();
                 this->merge();
             }
             else if((minPtr->lsibling != nullptr) || (minPtr->rsibling != nullptr))
             {
                 this->merge();
-                this->findMin();
-                this->size--;
             }
             else
             {
@@ -387,17 +349,97 @@ class BinomialHeap
                 minPtr->rsibling = nullptr;
                 minPtr->lsibling = nullptr;
                 this->minRoot = nullptr;
-                this->size--;
             }
+            this->size--;
+            this->node_list.erase(minPtr->item->id);
             return minPtr;
 
         }
+
+        bin_node<Object>* popMin()
+        {
+            // If empty return nullptr
+            if (this->isEmpty())
+            {
+                return nullptr;
+            }
+
+            bin_node<Object> * minPtr = this->minRoot;
+            bin_node<Object> *ptr;
+            bin_node<Object> *tempPtr;
+            int minDegree = minPtr->degree;
+
+            cout << "***Popping " << minPtr->item->id << "****" << endl;
+
+            // basically, we cut all the children of minPtr and make them roots. 
+
+            if (minPtr->child != nullptr){
+                ptr = minPtr->child;
+                minPtr->child = nullptr;
+                minPtr->degree = 0;
+                while (ptr != nullptr){ // insert into root list at the front
+                    tempPtr = ptr->rsibling;
+                    ptr->lsibling = nullptr;
+                    ptr->rsibling = this->head;
+                    this->head = ptr;
+                    ptr = tempPtr;
+                }
+            }
+            // Note: minRoot is stil in the root list.  Will skip it in merge
+            this->merge();
+            this->size--;
+            this->node_list.erase(minPtr->item->id);
+            return minPtr;
+
+        }
+
+
+        void decreaseKey(int node_id, int value){
+            cout << "***Decreasing " << node_id << " to " << value << "****" << endl;
+            if(this->node_list.count(node_id))
+            {
+                bin_node<Object>* node = this->node_list[node_id];
+                bin_node<Object>* parent, *temp;
+                Object * target, * tempobject;   // to swap the pointers
+                int temp_degree;
+
+                parent = node->parent;
+                target = node->item;
+
+                while ((parent != nullptr) && (parent->key > value))
+                {
+                    // swap keys and items. Leave degrees the same.
+                    node->item = parent->item;
+                    node->key = node->item->key;
+                    this->node_list.erase(node->item->id);  // remove the former hash
+                    this->node_list[node->item->id] = node; // new location for the hash
+                    node = parent;
+                    parent = node->parent;
+                }
+                // Now insert the value into  node
+                node->item = target;
+                node->key = value;
+                this->node_list.erase(node->item->id);  
+                this->node_list[node->item->id] = node;
+
+                // Get the new minimum
+                if (node->parent == nullptr){ // node is the new root
+                    if (value < this->minRoot->item->key){
+                        this->minRoot = node;
+                    }
+                }
+            }
+            else
+            {
+                cout << "Key does not exist" << endl;
+            }
+        }
+
+        
  
     protected:
    
 
 };
-
-
 
 #endif

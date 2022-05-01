@@ -22,3 +22,4 @@ fib_heap.h
 smallgraph.txt_out
 test_fib_heap.cpp
 a.out
+.vscode/*
