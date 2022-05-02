@@ -75,27 +75,37 @@ public:
    Object * deleteMin(){
        Object * toReturn = min->data->item;
        node<Object> * cnode = min->data->left;
-       rootInsert(cnode);
-       while(cnode->right != NULL){
-           rootInsert(cnode->right);
-           cnode = cnode->right;
-           cnode->parent->right = NULL;
-           cnode->parent = NULL;
-           fixHeights(cnode);
+       if(cnode != NULL){
+            rootInsert(cnode);
+            while(cnode->right != NULL){
+                rootInsert(cnode->right);
+                cnode = cnode->right;
+                cnode->parent->right = NULL;
+                cnode->parent = NULL;
+                fixHeights(cnode);
+            }
+            rootInsert(cnode);
+            fixHeights(cnode);
+            cnode->parent = NULL;
        }
-       rootInsert(cnode);
-       fixHeights(cnode);
-       cnode->parent = NULL;
        elements--;
        heights[min->data->height]--;
-       nodeList<Object> * dnode = min;
+       nodeList<Object> * temp, * dnode = min;
        min = min->next;
        rootRemove(dnode);
-       dnode = min->next;
-       nodeList<Object> * start = min;
-       while(dnode != start && dnode != NULL){
-           if(dnode->data->val < min->data->val){min = dnode;}
+       if(min != NULL){dnode = min->next;
+       while(dnode != NULL){
+           if(dnode->data->val < min->data->val){
+		temp = dnode->next;
+		dnode->prev->next = temp;
+		if(temp != NULL){temp->prev = dnode->prev;}
+		dnode->next = min;
+		dnode->prev = NULL;
+		min->prev = dnode;
+		min = dnode;
+	   }
            dnode = dnode->next;
+       }
        }
        while(mergeTrees()){}
        for(int i = 0; i < LOGMAX_SIZE - 1; i++){
@@ -149,41 +159,48 @@ private:
     };
     
     bool mergeTrees(){
+        if(min == NULL){return false;}
         nodeList<Object> * foundHeights[LOGMAX_SIZE];
         int i;
         bool del = false;
         bool found = false;
         node<Object> * lesser;
-        nodeList<Object> * current = min;
+        nodeList<Object> * temp, * current = min;
         for(i = 0; i < LOGMAX_SIZE; i++){foundHeights[i] = NULL;}
         
         do{
             if(foundHeights[current->data->height] != NULL){
-   		i = current->data->height;
-		lesser = join(current->data, foundHeights[current->data->height]->data);       
-		if(lesser != current->data){rootRemove(foundHeights[current->data->height]);}
-		else{del = true;}
+   	        i = current->data->height;
+   	        lesser = join(current->data, foundHeights[i]->data);       
+	        if(lesser == current->data){rootRemove(foundHeights[i]);}
+	        else{del = true;}
                 found = true;
-		foundHeights[i] = NULL;
+	        foundHeights[i] = NULL;
             }
             else{
                 foundHeights[current->data->height] = current;
             }
-            current = current->next;
+            temp = current->next;
             if(del){
-                rootRemove(current->prev);
+                rootRemove(current);
+                del = false;
             }
-        }while(current != min && current != NULL);
+            current = temp;
+        }while(current != NULL);
         
         return found;
     };
     
     nodeList<Object> * rootInsert(node<Object> * toInsert){
-        
+        if(toInsert == NULL){return NULL;}
         nodeList<Object> * newInsert = new nodeList<Object>;
         newInsert->data = toInsert;
         newInsert->prev = min;
-        if(min == NULL){min = newInsert;}
+        if(min == NULL){
+		min = newInsert;
+		min->prev = NULL;
+		min->next = NULL;
+	}
         else if(min->next != NULL){
             newInsert->next = min->next;
             min->next->prev = newInsert;
@@ -191,45 +208,60 @@ private:
         }
         else{
             min->next = newInsert;
-            min->prev = newInsert;
-	    newInsert->next = min;
+	    newInsert->next = NULL;
 	}
         
-	if(newInsert->data->val < min->data->val){min = newInsert;}
+	if(newInsert->data->val < min->data->val){
+		nodeList<Object> * temp = newInsert->next;
+		newInsert->prev->next = temp;
+		newInsert->next = min;
+		min->prev = newInsert->prev;
+		if(temp != NULL){temp->prev = newInsert->prev;}
+		newInsert->prev = NULL;
+		min = newInsert;
+	}
 
         return newInsert;
     };
     
     void rootRemove(nodeList<Object> * toRemove){
-        nodeList<Object> * next = toRemove->next, * prev = toRemove->prev;
-        if(next != NULL && prev != NULL && prev != next){
-            toRemove->next->prev = prev;
-            toRemove->prev->next = next;
+        nodeList<Object> * anext = toRemove->next, * aprev = toRemove->prev;
+        if(anext != NULL){
+            anext->prev = aprev;
+            if(aprev != NULL){aprev->next = anext;}
         }
-        
+	else{
+	        if(aprev != NULL){aprev->next = NULL;}
+		else{min = NULL;}
+        }
+        //TODO logic here
         delete toRemove;
         return;
     };
     
     int fixHeights(node<Object> * start){
-        if(start->left == NULL && start->right == NULL){
-            start->height = 0;
+        if(start == NULL){return 0;}
+	heights[start->height]--;
+        if((start->left == NULL && start->right == NULL)){
+	    start->height = 0;
+	    heights[0]++;
             return 0;
         }
         int left, right;
         left = fixHeights(start->left);
         right = fixHeights(start->right);
         (left > right)?(start->height = left + 1):(start->height = right+1);
-        return start->height;
+        heights[start->height]++;
+	return start->height;
     };
     
     void quake(int toQuake){
         nodeList<Object> * cnode = min->next;
         node<Object> * dnode;
-        while(cnode != min && cnode != NULL){
+        while(cnode != NULL){
             if(cnode->data->height > toQuake){
                 dnode = cnode->data->left;
-                while(dnode->right != NULL){
+                while(dnode->height > toQuake && dnode->right != NULL){
                    rootInsert(dnode->right);
                    dnode = dnode->right;
                    dnode->parent->right = NULL;
