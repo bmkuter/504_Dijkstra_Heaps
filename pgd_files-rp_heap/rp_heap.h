@@ -75,7 +75,7 @@ public:
 
 	heap_node<Data>* parent; // will use this as a dual purpose LL pointer for roots
 
-	heap_node (Data nodeData) {
+	heap_node (Data* nodeData) {
 		//key = nodeKey;
 		object = nodeData;
 		root = true;
@@ -137,11 +137,11 @@ public:
 	int size() const { return heap_size; };										// no changes
 
 	// normally would return data or something
-	int top() const { return min->object; }										// updated
+	Data* top() const { return min->object; }										// updated
 
 	// return top and remove the min node 
 	//(plus all clean up after removing a root)
-	int extract_min();															// updated
+	Data* extract_min();															// updated
 
 	void insert(Data*); // would normally push whatever the data is      		// updated
 
@@ -208,7 +208,7 @@ heap_node<Data>* rp_heap<Data>::extract_min_helper(heap_node<Data>* n) {
 };
 
 template <typename Data>
-int rp_heap<Data>::extract_min() {
+Data* rp_heap<Data>::extract_min() {
 
     /// MERGING ON EXTRACT_MIN CALL!!
     this->merge();
@@ -422,7 +422,7 @@ void rp_heap<Data>::decreaseKey(int nodeID, int newVal) {
 
 	/// Don't try to change the value if the new value is greater than the current one
 	if (newVal > node->object->key) {
-        cerr << "\n\nINVALID: Tried to increase the value/data of a node with key " << node->key << "\n\n";
+        cerr << "\n\nINVALID: Tried to increase the value/data of a node with key " << node->object->key << "\n\n";
         return;
     }
 
