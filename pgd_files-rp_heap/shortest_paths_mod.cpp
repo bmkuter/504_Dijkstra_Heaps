@@ -1,4 +1,11 @@
-// Copyright 2018 Richard Brower brower@bu.edu
+/**************************************************
+
+    Created by Parker Dunn (pgdunn@bu.edu)
+
+    Date: May 1 2022
+
+ *************************************************/
+
 /***************************************************
 
 One to all shortest path algorithms on G(N,A) with Nm nodes and Na arcs
@@ -6,12 +13,14 @@ labled 1, 2, ..., |N| = Nm and Arcs 1,..., |A| = Na
 Read form files
 Or = 1 set source node to 1 ;
 ***********************************************/
+
+
 #include <iostream>
 #include <fstream>
 #include <chrono>
 #include <queue>
 #include <cstring>
-#include "shortPaths.h"
+#include "shortPaths_mod.h"
 
 #define maxnodes 200000
 #define LARGE 99999999
@@ -74,7 +83,7 @@ int main(int argc, char *argv[])
 
   for (int i=0;i<=Nm;i++){  // Initialize nodes
 	  Nodes[i].first = NULL;
-    Nodes[i].id = i;
+      Nodes[i].id = i;
 	  Nodes[i].key = LARGE;
 	  Nodes[i].P = -1;
 	  Nodes[i].position = -1;
@@ -123,26 +132,6 @@ int main(int argc, char *argv[])
 
   printOutput(Nodes,Or,Nm,outfile);
 
-// Reset for next algorithm
-
-  for (int i=0;i<=Nm;i++){
-	  Nodes[i].key = LARGE;
-	  Nodes[i].P = -1;
-	  Nodes[i].position = -1;
-  }
-
-  cout << "CALLING Bellman-Ford\n" << endl;
-  outfile << "Bellman-Ford\n"<< endl;
-  start = chrono::steady_clock::now();
-  BellmanFord(Nodes,Or,Nm);
-  stop = chrono::steady_clock::now();
-  difference_in_time = stop - start;
-  difference_in_seconds = double(difference_in_time.count());
-  outfile << "CPU TIME in SECS " << difference_in_seconds<<endl;
-  outfile << endl;
-
-  printOutput(Nodes,Or,Nm,outfile);
-
   // Reset for next algorithm
 
   for (int i=0;i<=Nm;i++){
@@ -151,10 +140,10 @@ int main(int argc, char *argv[])
 	  Nodes[i].position = -1;
   }
 
-  cout << "CALLING Dijkstra Fib Heap\n" << endl;
-  outfile << "Dijkstra Fib Heap\n"<< endl;
+  cout << "CALLING Dijkstra Rank Pairing Heap\n" << endl;
+  outfile << "Dijkstra Rank Pairing Heap\n"<< endl;
   start = chrono::steady_clock::now();
-  DijkstraFibHeap(Nodes,Or,Nm);
+  DijkstraRankPairingHeap(Nodes,Or,Nm);
   stop = chrono::steady_clock::now();
   difference_in_time = stop - start;
   difference_in_seconds = double(difference_in_time.count());

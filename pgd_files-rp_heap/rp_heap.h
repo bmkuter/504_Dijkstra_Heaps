@@ -62,20 +62,22 @@ using std::cout;
 //using std::vector;
 using std::list;
 
-typedef struct node {
-	int key;
-	int data;
+template <typename Data>
+class heap_node {
+public:
+	//int key;
+	Data* object;
 	int rank;
 	bool root;
 
-	struct node* left;
-	struct node* right;
+	heap_node<Data>* left;
+	heap_node<Data>* right;
 
-	struct node* parent; // will use this as a dual purpose LL pointer for roots
+	heap_node<Data>* parent; // will use this as a dual purpose LL pointer for roots
 
-	node (int nodeData, int nodeKey) {
-		key = nodeKey;
-		data = nodeData;
+	heap_node (Data nodeData) {
+		//key = nodeKey;
+		object = nodeData;
 		root = true;
 		
 		left = nullptr;
@@ -83,7 +85,7 @@ typedef struct node {
 		parent = nullptr;
 	}
 
-} heap_node;
+};
 
 /********************* HELPER FUNCTION: max() *************************/
 
@@ -95,67 +97,67 @@ int max(int a, int b) {
 
 /******************** START OF rp_heap DEFINITION *********************/
 
-//template <class data>
+template <typename Data>
 class rp_heap {
 private:
 	int heap_size;
 	int maxRank;
-	heap_node* min;
-	heap_node* lowest_rank;
+	heap_node<Data>* min;
+	heap_node<Data>* lowest_rank;
 
-	map<int, heap_node*> contents; // will use this keep a pointer to each node
+	map<int, heap_node<Data>*> contents; // will use this keep a pointer to each node
 
-	void setRank(heap_node*); 													// done
+	void setRank(heap_node<Data>*); 																		// no changes
 
-	heap_node* join(heap_node*, heap_node*);									// done
-	void merge();																// done
+	heap_node<Data>* join(heap_node<Data>*, heap_node<Data>*);											 	// updated
+	void merge();																							// ?
 	/// My idea: 
 	///		"merge" is the recursive process that joins trees to make trees in the heap
 	///		"join"  is just the function to put any two trees together and would be called from within merge
 
-	void recalcMaxRank();														// done
-	void insert2root(heap_node*);												// done
+	void recalcMaxRank();																					// no changes
+	void insert2root(heap_node<Data>*);																		// updated
 	/// insert2root -> Updates "lowest_rank", but does NOT update "min"
 
-	heap_node* extract_min_helper(heap_node*);									// done (ish)
-	void delete_helper(heap_node*);												// done
+	heap_node<Data>* extract_min_helper(heap_node<Data>*);													// updated
+	void delete_helper(heap_node<Data>*);																	// no changes
 
 public:
-	rp_heap();																	// incomplete -> feels like i'm still missing stuff...
+	/********************* CONSTRUCTOR ************************************/
+    rp_heap() {
+        this->min = nullptr;
+        this->lowest_rank = nullptr;
+
+        this->maxRank = -1;
+        this->heap_size = 0;
+    };																			// no changes
 	~rp_heap();
 
-	bool empty() const { return (heap_size <= 0); }								// done
-	int size() const { return heap_size; };										// done
+	bool IsEmpty() const { return (heap_size <= 0); }							// updated
+	int size() const { return heap_size; };										// no changes
 
 	// normally would return data or something
-	int top() const { return min->data; }										// done
+	int top() const { return min->object; }										// updated
 
 	// return top and remove the min node 
 	//(plus all clean up after removing a root)
-	int extract_min();															// done
+	int extract_min();															// updated
 
-	void push(int, int); // would normally push whatever the data is      		// done
+	void insert(Data*); // would normally push whatever the data is      		// updated
 
-	void decreaseKey(int, int);													// done
+	void decreaseKey(int, int);													// UPDATED
 	/// decreaseKey -> Updates "lowest_rank" (via insert2root) and "min"
 
 };
 
-/********************* CONSTRUCTOR ************************************/
 
-rp_heap::rp_heap() {
-
-	this->min = nullptr;
-	this->lowest_rank = nullptr;
-
-	this->maxRank = -1;
-	this->heap_size = 0;
-
-};
 
 /********************  DESTRUCTOR ***************************************/
 
-void rp_heap::delete_helper(heap_node* d) {
+/// NO CHANGES REQUIRED FOR EITHER FUNCTION
+
+template <typename Data>
+void rp_heap<Data>::delete_helper(heap_node<Data>* d) {
 
 	if (d->left) {
 		delete_helper(d->left);
@@ -169,11 +171,12 @@ void rp_heap::delete_helper(heap_node* d) {
 
 };
 
-rp_heap::~rp_heap() {
+template <typename Data>
+rp_heap<Data>::~rp_heap() {
 
-	if (!this->empty()) {	/// need to delete some nodes
-		heap_node* itr = this->min;
-		heap_node* toDelete;
+	if (!this->IsEmpty()) {	/// need to delete some nodes
+		heap_node<Data>* itr = this->min;
+		heap_node<Data>* toDelete;
 
 		// looping through the circular LL of roots
 		while (itr != nullptr) {
@@ -191,9 +194,12 @@ rp_heap::~rp_heap() {
 
 /**************** EXTRACT MIN *********************************************/
 
-heap_node* rp_heap::extract_min_helper(heap_node* n) {
+/// BOTH EXTRACT FUNCTIONS ARE UPDATED
 
-	heap_node* next = n->right;
+template <typename Data>
+heap_node<Data>* rp_heap<Data>::extract_min_helper(heap_node<Data>* n) {
+
+	heap_node<Data>* next = n->right;
 	n->right = nullptr;
 
 	insert2root(n);
@@ -201,15 +207,15 @@ heap_node* rp_heap::extract_min_helper(heap_node* n) {
 	return next;
 };
 
-int rp_heap::extract_min() {
-
+template <typename Data>
+int rp_heap<Data>::extract_min() {
 
     /// MERGING ON EXTRACT_MIN CALL!!
     this->merge();
 
     // grab the value to return
-    int value = this->top();
-    int min_key = this->min->key;
+    Data* minObject = this->top();
+    int minID = this->min->object->id;
 
     /// DEALING WITH ISSUE: this->min and this->lowest_rank are EQUAL
     /// 	** Need to keep some connection to the root LL **
@@ -217,7 +223,7 @@ int rp_heap::extract_min() {
         this->lowest_rank = this->lowest_rank->parent;
 
     /// DEALING WITH ANOTHER ISSUE: extracting the only root in the circularly linked list
-    heap_node* node_itr;
+    heap_node<Data>* node_itr;
 
     /// (1) There was only one tree
     if (this->lowest_rank == this->min) {
@@ -229,7 +235,7 @@ int rp_heap::extract_min() {
             this->min = nullptr;
             this->heap_size--;
             this->contents.clear();
-            return value;
+            return minObject;
         }
 
         // move child to root
@@ -246,7 +252,7 @@ int rp_heap::extract_min() {
     } else { /// (2) more than one tree in circularly linked list, proceed as normal
 
         /// remove min from root LL (i.e., have other nodes bypass it)
-        heap_node *prev_min = this->min;
+        heap_node<Data>* prev_min = this->min;
         while (prev_min->parent != this->min)
             prev_min = prev_min->parent;
         prev_min->parent = min->parent;
@@ -270,19 +276,24 @@ int rp_heap::extract_min() {
     /// SPECIAL CASE: ONLY TWO NODES IN CIRCULAR LL OF ROOTS
     // (1) IF ->  to deal with special case
     if (this->min->parent->parent == this->min) {
-        if (this->min->parent->data < this->min->data)
+
+        //if (this->min->parent->data < this->min->data) OLD
+        if (this->min->parent->object->key < this->min->object->key) // NEW
             this->min = this->min->parent;
+
     } else {
+
         // (2) ELSE -> deals with general case
         while (node_itr->parent != this->min) {
-            if (this->min->data > node_itr->data)
+            //if (this->min->data > node_itr->data)  OLD
+            if (this->min->object->key > node_itr->object->key)  /// NEW
                 this->min = node_itr;
             node_itr = node_itr->parent;
         }
     }
 
 	/// remove extracted element from contents
-	auto toDelete = this->contents.find(min_key);
+	auto toDelete = this->contents.find(minID);
 	if (toDelete == this->contents.end())
 		cerr << "\n\nError in 'extract_min': Could not locate element in 'contents' that needs to be removed.\n\n";
 	else
@@ -290,50 +301,48 @@ int rp_heap::extract_min() {
 
     this->heap_size--;
 
-	return value;
+	return minObject;
 };
 
-/*
-
-	Steps:
-	(1) grab the value to return
-	(2) recursively cut right spine and insert each element into the root
-
-
-*/
 
 /**************** PUSH - add new element to heap; LAZY insert *************/
-
-void rp_heap::push(int newData, int newKey) {
+/// UPDATED!
+template <typename Data>
+void rp_heap<Data>::insert(Data* newData) {
 
 	/// increase the size of the heap
 	this->heap_size++;
 
 	/// create a new heap_node
-	heap_node* newNode = new heap_node(newData, newKey);
+	heap_node<Data>* newNode = new heap_node(newData);
+
+	/// update "nodeitem" properties
+	newNode->object->position = 1;
+
 
 	/// Lazy insert of the new node
 	insert2root(newNode); // setRank(newNode); - taken care of by this function
-	contents.emplace(newKey, newNode);
+	contents.emplace(newNode->object->id, newNode);
 
 	/// Update min if necessary
 	// SPECIAL CONDITION: this->min has not been updated and equal "nullptr"
     if (this->min == nullptr) {
         this->min = newNode;
     } else {
-        if (this->min->data > newNode->data) this->min = newNode;
+        if (this->min->object->key > newNode->object->key) this->min = newNode;
     }
 
 };
 
 /******************** RECALCULATE MAX RANK METHOD ********************/
-
-void rp_heap::recalcMaxRank() {
+/// NO UPDATES NEEDED!!
+template <typename Data>
+void rp_heap<Data>::recalcMaxRank() {
 
 	int maximum = this->lowest_rank->rank;
 	int current_rank;
 
-	heap_node* itr = this->lowest_rank->parent;
+	heap_node<Data>* itr = this->lowest_rank->parent;
 	while (itr != lowest_rank) {
 		current_rank = itr->rank;
 
@@ -346,7 +355,9 @@ void rp_heap::recalcMaxRank() {
 };
 
 /**************** INSERT 2 ROOT METHOD *******************************/
-void rp_heap::insert2root(heap_node* n) {
+/// NO UPDATES NEEDED!! -- depends only on rank
+template <typename Data>
+void rp_heap<Data>::insert2root(heap_node<Data>* n) {
 	
 	// preliminary steps to define the node as a root
 	n->root = true;
@@ -363,7 +374,7 @@ void rp_heap::insert2root(heap_node* n) {
 
     } else {  /// GENERAL CONDITION (most of the time this will run)
 
-        heap_node* itr = this->lowest_rank->parent;
+        heap_node<Data>* itr = this->lowest_rank->parent;
 
         /// handling the case where there is only one root node so far
         if (itr == this->lowest_rank) {
@@ -380,8 +391,8 @@ void rp_heap::insert2root(heap_node* n) {
             }
 
             //// (2) saving pointers to keep track of before/after
-            heap_node *prev = itr;
-            heap_node *next = itr->parent;
+            heap_node<Data>* prev = itr;
+            heap_node<Data>* next = itr->parent;
 
             /// (3) insert new tree in circularly linked list
             n->parent = next;
@@ -397,26 +408,30 @@ void rp_heap::insert2root(heap_node* n) {
 
 
 /******************** DECREASE KEY METHOD ****************************/  // NEED REVIEWING BY COMPARING TO THE RANK-PAIRING HEAP PAPER
-void rp_heap::decreaseKey(int x, int newVal) {
+/// UPDATED!!
+template <typename Data>
+void rp_heap<Data>::decreaseKey(int nodeID, int newVal) {
 
 	/// Retrieve pointer to node associated with the key
-	heap_node* node = contents.at(x);
+	heap_node<Data>* node = contents.at(nodeID);
 	// NOTE: the line above will throw an error if the key is not found
 
     /// DEBUGGING
-    cout << "Decreasing Node ID: " << node->key << " from " << node->data << " to " << newVal << std::endl;
+    //cout << "Decreasing Node ID: " << node->key << " from " << node->data << " to " << newVal << std::endl;
+    //cout << "Decreasing Node ID: " << node->object->id << " from " << node->object->key << " to " << newVal << std::endl;
 
 	/// Don't try to change the value if the new value is greater than the current one
-	if (newVal > node->data) {
+	if (newVal > node->object->key) {
         cerr << "\n\nINVALID: Tried to increase the value/data of a node with key " << node->key << "\n\n";
         return;
     }
 
 	/// Decrease the value/data
-	node->data = newVal;
+	//node->data = newVal;
+	node->object->key = newVal;
 
-	heap_node* p = node->parent;
-	heap_node* r = node->right;
+	heap_node<Data>* p = node->parent;
+	heap_node<Data>* r = node->right;
 
 	if (!node->root) {  /// updated node is not already a root
 
@@ -445,22 +460,28 @@ void rp_heap::decreaseKey(int x, int newVal) {
 	}
 
 	/// Check if new root is the new minimum
-	if (min->data > node->data) min = node;
+	if (min->object->key > node->object->key) this->min = node;
 };
+
 
 /*************** JOIN -> makes all changes to facilitate merging of two trees **/
 
 // **NOTE**: This function will not interact with the LL of root trees!!!
 // 			 The circularly linked list will have to be managed separately.
 
-heap_node* rp_heap::join(heap_node* nodeA, heap_node* nodeB) {
+/// UPDATED!!!
+
+template <typename Data>
+heap_node<Data>* rp_heap<Data>::join(heap_node<Data>* nodeA, heap_node<Data>* nodeB) {
 
 	/// Quick Error Check
 	if (nodeA->rank != nodeB->rank) cerr << "\n\nWARNING: Trying to join two half-trees with different ranks!\n\n";
 
-	int max_data = max(nodeA->data, nodeB->data);
+	//int max_data = max(nodeA->object, nodeB->data);
+	int max_data = max(nodeA->object->key, nodeB->object->key);
 
-	if (max_data != nodeA->data) { // Condition: nodeA->data is smaller and should be root
+	//if (max_data != nodeA->data) { // Condition: nodeA->data is smaller and should be root
+	if (max_data != nodeA->object->key) {
 
 		nodeB->root = false;
 		nodeB->parent = nodeA;
@@ -489,34 +510,21 @@ heap_node* rp_heap::join(heap_node* nodeA, heap_node* nodeB) {
 
 
 /*************** MERGE -> repeated merging of same rank trees ****************/
-
-void rp_heap::merge() {
+template <typename Data>
+void rp_heap<Data>::merge() {
 
 	int sz = (this->maxRank+1) * 10;
 
-    heap_node* tmp;
+    heap_node<Data>* tmp;
 
-	heap_node* rootTrees[sz];  // making array double in size to be safe
+	heap_node<Data>* rootTrees[sz];  // making array double in size to be safe
 	for (int i = 0; i < sz; i++) 
 		rootTrees[i] = nullptr;
 
-	//bool modified[sz];
-	// for (int i = 0; i < sz; i++) {
-	// 	rootTrees[i] = nullptr;
-	// 	modified[i] = 0;
-	// }
-
-	// heap_node* roots_itr = this->lowest_rank;
-	// heap_node* prev;
-
-	/// add first tree to array
-	// rootTrees[roots_itr->rank] = roots_itr;
-	// prev = roots_itr;
-	// roots_itr = roots_itr->parent;
 
 	/// Create a vector of all the root nodes & delete all "next"/"parent" pointers
-	list<heap_node*> roots;
-	heap_node* itr = this->lowest_rank;
+	list<heap_node<Data>*> roots;
+	heap_node<Data>* itr = this->lowest_rank;
 	while (itr->parent) { 	/// i.e., while (itr->parent != nullptr)
 		tmp = itr;
 		itr = itr->parent;
@@ -526,7 +534,6 @@ void rp_heap::merge() {
 
 	int start_size;
 	int cRank;
-
 
     /// PULL OUT EACH ROOT FROM VECTOR UNTIL ALL ROOTS ARE IN "rootTrees[]"
     start_size = roots.size();
@@ -556,28 +563,6 @@ void rp_heap::merge() {
 
     } /// END OF FOR LOOP
 
-    /// put the roots back in the vector
-    /*
-    for (int i = 0; i < sz; i++) {
-        if (rootTrees[i]) {
-            roots.push_back(rootTrees[i]);
-            rootTrees[i] = nullptr;
-        }
-    }
-     */
-
-
-
-	/// From the array of root trees, REFORM the circular LL of roots
-		/// In "rootTrees", the roots are ordered how I want them to be in the circular LL
-//	for (int i = 0; i < roots.size(); i++) {
-//
-//		tmp = roots.front();
-//		roots.pop_front();
-//		cRank = tmp->rank;
-//
-//		rootTrees[cRank] = tmp;
-//	}
 
     int start = 0;
     while (rootTrees[start] == nullptr)
@@ -609,7 +594,8 @@ void rp_heap::merge() {
 
 
 /******************** SET RANK METHOD (RECURSIVE) ********************/
-void rp_heap::setRank(heap_node* aNode) {
+template <typename Data>
+void rp_heap<Data>::setRank(heap_node<Data>* aNode) {
 
 	/// special procedure if current node is a root
 	if (aNode->root) {
@@ -622,8 +608,8 @@ void rp_heap::setRank(heap_node* aNode) {
 	}
 
 	/// setup
-	heap_node* L = aNode->left;
-	heap_node* R = aNode->right;
+	heap_node<Data>* L = aNode->left;
+	heap_node<Data>* R = aNode->right;
 	int rankR, rankL;
 	int rankDiff;
 	//int prevRank = aNode->rank;
@@ -679,53 +665,3 @@ void rp_heap::setRank(heap_node* aNode) {
 
 
 #endif /* _RP_HEAP_H_ */
-
-/*
-	/// BELOW DOES NOT WORK!!
-	/// CHANGES:
-	/// (1) need a more structured way to move through the circular LL
-	/// (2) "blow up" the circular LL and must find a relaiable way to track each root
-
-	
-
-	/// do-while loop goes through the entire circularly linked list of roots each time
-	do {
-
-		/// intention is for this to go through all root nodes once
-		for (int n = 0; n < sz; n++) {
-			//while (roots_itr != lowest_rank) {
-
-			int cRank = roots_itr->rank;
-
-			if (rootTrees[cRank]) { // TRUE if the position where the current root would go is not empty
-
-				/// join two trees
-				roots_itr = this->join(roots_itr, rootTrees[cRank]);
-
-				/// cleanup
-				rootTrees[cRank] = nullptr;
-				rootTrees[roots->itr]
-
-				modified = true; /// ** this forces do-while to run again
-
-			} else {
-
-				/// add current root to the array and keep going
-
-			}
-
-			/// move iterators
-			prev = roots_itr;
-			roots_itr = roots_itr->parent;
-
-		}
-
-		int sum = 0;
-		for (int j = 0; j < sz; j++) {
-			sum = sum + modified[j];
-			modified[j] = 0;
-		}
-
-	} while (sum > 0);
-
-*/

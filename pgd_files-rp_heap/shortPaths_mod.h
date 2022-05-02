@@ -1,22 +1,17 @@
-/*
-  References:
-    * https://www.quora.com/When-would-an-array-be-preferred-over-a-heap-in-Dijkstras-algorithm
-    * https://dl.acm.org/doi/abs/10.1145/321992.321993
-    * https://iq.opengenus.org/time-and-space-complexity-of-dijkstra-algorithm/
-    * https://sites.google.com/site/indy256/algo_cpp/dijkstra_heap
-    * https://cp-algorithms.com/graph/bellman_ford.html
-*/
-
 #ifndef SHORTPATH_H_
 #define SHORTPATH_H_
 
+/*******************************************
+
+ PARKER DUNN (pgdunn@bu.edu)
+
+ ASSIGNMENT: Software HW 4 for EC 504
+ DUE: 11 April 2022
+
+*******************************************/
+
 #include <queue>
-#include <deque>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
 #include "myHeap.full.h"  // This is my version of HW 2.  You can include your own binary heap
-#include "ben_fib_heap.h"
 
 #define LARGE1 9999999
 
@@ -31,225 +26,192 @@ struct arc{
 
 typedef struct node{
    struct arc *first; /* first arc in linked list */
-   int id;  // The number of the vertex in this node
+   int id;  // The number of the vertex in this node 
    int key;  /* Distance estimate, named key to reuse heap code*/
    int P;  /* Predecessor node in shortest path */
-   int position;  /* Position of node in heap, from 0 to Nm, where 0 is best */
-   } nodeitem;
+   int position;  /* 1 = in the heap  -1 = NOT in the heap */
+} nodeitem;
 
+/*******************************************
+
+    NOTES!
+
+    - " arc->end " == this is the end of a single edge; the connected vertex
+
+    - We can index the array of vertices using the vertex number!
+        - e.g.  v = edge->end;
+                N[v].key = ... etc.
+
+    - /// **NOTE** N[].key is initialized in "shortest_paths.cpp" as 9999999
+
+*******************************************/
+
+
+
+/*********************** QUESTIONS!!!! ****************************************
+
+ (1) Does a "nodeitem" refer to a pointer to a "node" structure?!
+    -- I think I am having a moment where a little syntax feature of
+        structures was misunderstood and is being exposed for the first time
+
+ *****************************************************************************/
+
+
+
+/******************* BELLMAN-FORD ALGO FOR SHORTEST PATHS ********************/
 void BellmanFord(nodeitem N[], int Or, int Nm)
 {
-   //queue<nodeitem*> q;
-   std::deque<int> dq;
+   /// ASSIGNMENT: You program this, a  Bellman Ford algorithm that uses a work queue.  DO NOT implement this as 3 for loops.
+   /// That can be very slow, and waste many iterations.
+
+   queue<node*> work_queue;
+   node* node_u;
+   int dist;
    struct arc *edge;
-   int v, dv, min_d, min_v, finished, key;
+   int dV;  /// dV == "destination vertex" a.k.a. the end of an edge
 
 
-   //Heap<nodeitem> *thisHeap;
-   //thisHeap = new Heap<nodeitem>;
-   //nodeitem *node;
-   //nodeitem Elements[Nm+1];
-   //nodeitem *temp;
+   bool* inQ = new bool[Nm];
+   for (int k = 0; k <= Nm; k++) inQ[k] = false;
 
-   min_v = Or;     //Setting current node
-   min_d = 0;      //Setting current minimum distance to 0, as graph is unexplored.
+   /// Use N[].key to track distance from source node (I think)
+   /// **NOTE** N[].key is initialized in "shortest_paths.cpp" as 9999999
 
-   /* Bellman-Ford components */
-   int in_queue[Nm+1];
-   memset(in_queue, 0, sizeof(in_queue));
+   /// Initializing origin
+   N[Or].key = 0;
+   inQ[Or] = true;
+   work_queue.push(&N[Or]);
 
-   /* *********************** */
+   /// Working through the queue
+   while (!work_queue.empty()) {
 
-   N[Or].key = 0;  //Set starting node distance to 0.
-   finished = 1;   //Numnber of nodes computer. Used to end program.
+       /// pull from work queue
+       node_u = work_queue.front();
+       work_queue.pop();
+       inQ[node_u->id] = false;
 
-   //Elements[Or].key = N[Or].key;
-   //Elements[Or].id = Or;
-   in_queue[Or] = 1;
-   //printf("%s\n", "Done with init");
-   //thisHeap->insert(&Elements[min_v]); //Adds pointer of the origin node to the heap.
-   //while (thisHeap->IsEmpty() == 0) //While priority queue isn't empty...
-   //q.push(&Elements[Or]);
-   dq.push_front(Or);
-   //printf("added %d to q.\n", Elements[min_v].id);
-   //while (q.empty() == 0) //While priority queue isn't empty...
-   while(dq.empty()==0)
-   {
-     // Add min node from heap to workspace...
-     //temp = thisHeap->remove_min();
-     //temp = q.front();
-     min_v = dq.front();
-     dq.pop_front();
-     //q.pop();
-     //printf("min node: %d\nmin weight: %d\n", temp->id, temp->key);
-     //min_v = temp->id;
-     min_d = N[min_v].key;
-     in_queue[min_v] = 0;
+       /// distance to node_u & first edge out of the node
+       dist = node_u->key;
+       edge = node_u->first;
 
-     // And explore edges
-     edge = N[min_v].first;  //Get the first of any edges from a node.
-     while (edge != NULL)   //explore the outgoing arcs of u
-     {
-         v = edge->end;             //End node
-         dv = min_d + edge->length; //Newly discovered distance
-         if (N[v].key > dv)
-         {
-           N[v].key = dv;  //Update v's distance to the new shorter path.
-           N[v].P = min_v; //Set node v's parent to the current node, as it yields a shorter path.
+       /// Check if each arc from "node_u" can make any distances shorter
 
-           //Elements[v].key = N[v].key;
-           //Elements[v].id = N[v].id;
-           if (!in_queue[v]) {
-             //thisHeap->insert(&Elements[v]);
-             //q.push(&Elements[v]);
-             dq.push_back(v);
-             in_queue[v] = 1;
-           }
-         }
-         edge = edge->next;
-     }
+       while (edge != nullptr) {
+            dV = edge->end;
+            if (N[dV].key > dist + edge->length) {
+                /// found a node we can update
+                N[dV].key = dist + edge->length;
+                N[dV].P = node_u->id;
+
+                if (!inQ[dV]) work_queue.push(&N[dV]);
+            }
+            /// Updating for next iteration
+            edge = edge->next;
+       }
    }
-}/* end Bellman-Ford */
+
+
+
+}/*************  end Bellman-Ford  ****************************************/
 /* ---------------*/
 
 
+/***************** DIJKSTRA'S SIMPLE IMPLMENTATION BY PROFESSOR *************/
 void Dijkstra(nodeitem N[], int Or, int Nm)
 {
-    int Mark[Nm+1];
+    /// SETUP
+    int Mark[Nm+1];   /// used to track which vertices have been visited and queued
     struct arc *edge;
     int v, dv, min_d, min_v, finished;
     for (int i=1; i<=Nm; i++){
-        Mark[i]=-1; //Set initial distances to unconnected
+        Mark[i]=-1;
     }
-    N[Or].key = 0;  //Set starting node distance to 0.
-    Mark[Or] = 1;   //Add starting node to marked list.
-    finished = 1;   //Numnber of nodes computer. Used to end program.
-    min_v = Or;     //Setting current node
-    min_d = 0;      //Setting current minimum distance to 0, as graph is unexplored.
-    while (finished < Nm){      //While there are nodes left to explore.
-        edge = N[min_v].first;  //Get the first of any edges from a node.
-        while (edge != NULL){   //explore the outgoing arcs of u
-            v = edge->end;      //Node at the other end of the edge.
-//printf("%d\n", v);
+    N[Or].key = 0;   /// "Or" -> input argument; "ORIGIN"
+    Mark[Or] = 1;
+    finished = 1;
+    min_v = Or;
+    min_d = 0;
+    while (finished < Nm){
+        edge = N[min_v].first;  ///update distances -> N[] is all vertices; min_v =
+        /// explore the outgoing arcs of u; (often noted by a "for" loop)
+        while (edge != NULL){       // we can use while loop b/c edges are stored as LL
+            v = edge->end;  /// "end" = vertex at the end of a directed edge
             dv = min_d + edge->length;
-            if (N[v].key > dv){ //If v's current distance is greater than the distance from source to u + u to v...
-                N[v].key = dv;  //Update v's distance to the new shorter path.
-                N[v].P = min_v; //Set node v's parent to the current node, as it yields a shorter path.
-            }                   //if D > dv
+            if (N[v].key > dv){
+                N[v].key = dv;
+                N[v].P = min_v;
+            }//if D > dv 
             edge = edge->next;
-        }           // while edge
+        }// while edge           
 
-        min_d = LARGE1;                 //Setting minimum comparision value to "infinite"
-        for (int j = 0; j <= Nm; j++){  //Iterate through list of known distances to find next one.
-            if (Mark[j] < 1){           //If node is unexplored.
-              if (N[j].key < min_d){    //If that next element is smaller than the current minimum distance. This can just be selecting the first item from a priority queue.
-                    min_d = N[j].key;   //Setting min value to compare to next
-                    min_v = j;          //Setting min vertex, or next starting node.
+        /// I believe this section finds the minimum element in the queue!!
+        /// This will not be needed for other implementations with priority queues
+        min_d = LARGE1;
+        for (int j = 0; j <= Nm; j++){
+            if (Mark[j] < 1){
+                if (N[j].key < min_d){
+                    min_d = N[j].key;
+                    min_v = j;
                 }
             }
-        }
-        Mark[min_v]=1;        //Add current node to marked array
-        finished++;           //Increase count of finished nodes.
-    }
-} /* end Dijkstra */
+        } 
+        Mark[min_v]=1;
+        finished++;
+    } 
+} /******** end Dijkstra simple implementation *************/
 
 
+
+/***************** DIJKSTRA'S IMPLEMENTATION WITH A PRIORITY QUEUE ************************/
 void DijkstraHeap(nodeitem N[], int Or, int Nm)
 {
-    Heap<nodeitem> *thisHeap;
-    struct arc *edge;
-    int v, dv, min_d, min_v;
+   Heap<nodeitem> *thisHeap = new Heap<nodeitem>();
+   struct arc *edge;
+   nodeitem *node;
+   int dV;  /// dV == "destination vertex" a.k.a. the end of an edge
+   
+   /// ASSIGNMENT: You write a Dijkstra algorithm using a binary heap; you can reuse the one from HW 2 with minor variations
 
-    thisHeap = new Heap<nodeitem>;
-    nodeitem *temp;
+   /// Use N[].key to track distance from source node (I think)
+   /// This will be the metric used to control the order/priority of the Binary Heap Queue
+   /// **NOTE** N[].key is initialized in "shortest_paths.cpp" as 9999999
 
-    N[Or].key = 0;  //Set starting node distance to 0.
-    N[Or].id = Or;
+   /// Initializing origin
+   N[Or].key = 0;
 
-    min_v = Or;     //Setting current node, min vertex
-    min_d = 0;      //Setting current minimum distance to 0, as graph is unexplored.
+   /// Pushing all vertices into Heap
+   for (int j = 1; j <= Nm; j++) {  /// <-- we only use Nodes[1] to Nodes[Nm]
+        thisHeap->insert(&N[j]);
+   }
 
-    thisHeap->insert(&N[min_v]); //Adds pointer of the origin node to the heap.
+   while (!thisHeap->IsEmpty()) {
+        /// pull min element
+        node = thisHeap->extract_min();         /// ****** RENAMED THIS FUNCTION!!! ********
+        //node = thisHeap->remove_min();
 
-    //printf("Source node: %d \nSoure node weight: %d\n", Elements[min_v].id, Elements[min_v].key);
+        /// mark node as visited -> no need ... you can use "P" attribute to identify if element has been "visited"
 
-    while (thisHeap->IsEmpty() == 0) //While priority queue isn't empty...
-    {
-      // Add min node from heap to workspace...
-      temp = thisHeap->remove_min();
-      //printf("min node: %d\nmin weight: %d\n", temp->id, temp->key);
-      min_v = temp->id;
-      min_d = temp->key;
+        /// update distances to edges in heap
+        edge = node->first;
+        //dV = edge->end;
+        while (edge != nullptr) {
+            dV = edge->end;
+            /// Conditions
+            /// (1) N[edge->end].position != -1  --> checks if end of the edge is in the PQ or already part of shortest paths
+            /// (2) N[edge->end].key > node->key + edge->length --> checking if a distance update is necessary
+            if ( (N[dV].position != -1) and (N[dV].key > node->key + edge->length)) {
+                N[dV].P = node->id;
+                //thisHeap->decreaseKey(N[dV].position, (node->key + edge->length));
+                thisHeap->decreaseKey(N[dv].id, (node->key + edge->length));     /// ***** CHANGED THE INPUT OF THIS FUNCTION SLIGHTLY ******
+            }
+            /// Updating for next iteration
+            edge = edge->next;
+            //dV = edge->end;
+        }
+   }
 
-      // printf("ID: %d, ",min_v );
-      // printf("Key: %d\n",min_d);
 
-      // And explore edges
-      edge = N[min_v].first;  //Get the first of any edges from a node.
-      while (edge != NULL){   //explore the outgoing arcs of u
-          v = edge->end;      //Node at the other end of the edge.
-          dv = min_d + edge->length;
-          if (N[v].key > dv){ //If v's current distance is greater than the distance from source to u + u to v...
-            //printf("Previous value for node %d: %d\n", v, N[v].key);
-            thisHeap->insert(&N[v]);
-            N[v].key = dv;  //Update v's distance to the new shorter path.
-            N[v].P = min_v; //Set node v's parent to the current node, as it yields a shorter path.
-            thisHeap->decreaseKey(N[v].position, dv);
-            //printf("Decreasing...\n" );
-          }                   //if D > dv
-          edge = edge->next;
-      }           // while edge
-    }
-} /* end DijkstraHeap */
+} /************* end DijkstraHeap ****************/
 
-void DijkstraFibHeap(nodeitem N[], int Or, int Nm)
-{
-  struct arc *edge;
-  int v, dv, min_d, min_v,min_d_2;
 
-  N[Or].key = 0;  //Set starting node distance to 0.
-  N[Or].id = Or;
-
-  min_v = Or;     //Setting current node, min vertex
-  min_d = 0;      //Setting current minimum distance to 0, as graph is unexplored.
-
-  //Testing fib heap
-  FIB_NODE *new_node, *min_node, *extracted_min, *node_to_be_decrease, *find_use;
-  FIB_HEAP *heap, *h1, *h2;
-  int operation_no, new_key, dec_key, ele, i, no_of_nodes;
-  heap = (FIB_HEAP *)malloc(sizeof(FIB_HEAP));
-  heap = NULL;
-  heap = make_fib_heap();
-  //fib_heap_insert(heap, new_node, min_d);
-
-  for (size_t i = 1; i <= Nm; i++)
-  {
-    fib_heap_insert(heap, new_node, N[i].key, i);
-  }
-  print_heap(heap->min);
-
-  extracted_min = fib_heap_extract_min(heap);
-  do{
-    min_v = extracted_min->id;
-    min_d = extracted_min->key;
-
-    edge = N[min_v].first;  //Get the first of any edges from a node.
-
-    while (edge != NULL)
-    {
-      v = edge->end;
-      dv = min_d + edge->length;
-      printf("%d->%d with weight %d\n",min_v, v, edge->length);
-      if (N[v].key > dv) {
-        N[v].key = dv;
-        N[v].P = min_v;
-        printf("Trying to find node %d in heap to change key from %d to %d\n",v,(edge->length),dv);
-        decrease_key_helper(heap, heap->min, v, dv);
-      }
-      edge = edge->next;
-    }
-    extracted_min = fib_heap_extract_min(heap);
-  }while (heap->min != NULL);
-  return;
-}
 #endif
