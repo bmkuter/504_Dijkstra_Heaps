@@ -3,8 +3,8 @@
 #============================================================
 TARGET	=  shortest
 
-C_SOURCES =  Shortest_paths.cpp
-C_OBJS     =  Shortest_paths.o
+C_SOURCES =  Shortest_paths.cpp ben_fib_heap.cpp 
+C_OBJS     =  Shortest_paths.o ben_fib_heap.o
 MY_INCLUDES =
 # merg.h
 

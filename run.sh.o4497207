@@ -1,0 +1,61 @@
+rm -f shortest Shortest_paths.o ben_fib_heap.o core
+g++  -c -g -std=c++11 Shortest_paths.cpp
+g++ -g -std=c++11   -c -o ben_fib_heap.o ben_fib_heap.cpp
+g++ -g -std=c++11  Shortest_paths.o ben_fib_heap.o   -o shortest
+Graph1.txt
+CALLING Dijkstra Simple
+CPU TIME in SECS 0.380731
+
+CALLING Dijkstra Heap
+CPU TIME in SECS 0.00400905
+
+CALLING Bellman-Ford
+CPU TIME in SECS 0.00347999
+
+CALLING Dijkstra Fib Heap
+CPU TIME in SECS 0.00753626
+
+CALLING Dijkstra Binomial Heap
+CPU TIME in SECS 0.0192198
+
+CALLING Dijkstra Quake Heap
+CPU TIME in SECS 0.0145637
+
+Graph2.txt
+CALLING Dijkstra Simple
+CPU TIME in SECS 3.58241
+
+CALLING Dijkstra Heap
+CPU TIME in SECS 0.0143485
+
+CALLING Bellman-Ford
+CPU TIME in SECS 0.0105281
+
+CALLING Dijkstra Fib Heap
+CPU TIME in SECS 0.0239026
+
+CALLING Dijkstra Binomial Heap
+CPU TIME in SECS 0.0641213
+
+CALLING Dijkstra Quake Heap
+CPU TIME in SECS 0.0514219
+
+Graph3.txt
+CALLING Dijkstra Simple
+CPU TIME in SECS 39.8874
+
+CALLING Dijkstra Heap
+CPU TIME in SECS 0.0690465
+
+CALLING Bellman-Ford
+CPU TIME in SECS 0.0777762
+
+CALLING Dijkstra Fib Heap
+CPU TIME in SECS 0.104892
+
+CALLING Dijkstra Binomial Heap
+CPU TIME in SECS 0.260331
+
+CALLING Dijkstra Quake Heap
+CPU TIME in SECS 0.209553
+

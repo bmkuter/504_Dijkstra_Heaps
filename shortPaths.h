@@ -15,8 +15,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <string.h>
 #include "myHeap.full.h"  // This is my version of HW 2.  You can include your own binary heap
 #include "ben_fib_heap.h"
+#include "binomialHeap.h"
+#include "quakeHeap.h" 
 
 #define LARGE1 9999999
 
@@ -29,12 +32,13 @@ struct arc{
   int end;
   };
 
-typedef struct node{
+typedef struct generic_node{
    struct arc *first; /* first arc in linked list */
    int id;  // The number of the vertex in this node
    int key;  /* Distance estimate, named key to reuse heap code*/
    int P;  /* Predecessor node in shortest path */
    int position;  /* Position of node in heap, from 0 to Nm, where 0 is best */
+   int visited;
    } nodeitem;
 
 void BellmanFord(nodeitem N[], int Or, int Nm)
@@ -205,7 +209,8 @@ void DijkstraHeap(nodeitem N[], int Or, int Nm)
 void DijkstraFibHeap(nodeitem N[], int Or, int Nm)
 {
   struct arc *edge;
-  int v, dv, min_d, min_v,min_d_2;
+  int v, dv, min_d, min_v,min_d_2, reduced = 0, old_value;
+  FIB_NODE* FIB_NODE_array[Nm+1];
 
   N[Or].key = 0;  //Set starting node distance to 0.
   N[Or].id = Or;
@@ -214,22 +219,23 @@ void DijkstraFibHeap(nodeitem N[], int Or, int Nm)
   min_d = 0;      //Setting current minimum distance to 0, as graph is unexplored.
 
   //Testing fib heap
-  FIB_NODE *new_node, *min_node, *extracted_min, *node_to_be_decrease, *find_use;
-  FIB_HEAP *heap, *h1, *h2;
+  FIB_NODE *new_node, *extracted_min;
+  FIB_HEAP *heap;
   int operation_no, new_key, dec_key, ele, i, no_of_nodes;
   heap = (FIB_HEAP *)malloc(sizeof(FIB_HEAP));
   heap = NULL;
   heap = make_fib_heap();
-  //fib_heap_insert(heap, new_node, min_d);
 
-  for (size_t i = 1; i <= Nm; i++)
-  {
-    fib_heap_insert(heap, new_node, N[i].key, i);
-  }
-  print_heap(heap->min);
+  FIB_NODE_array[Or] = fib_heap_insert(heap, new_node, N[Or].key, Or);
+    
+  while (heap->n>0){
+  //while (heap->min!=NULL){
+    if(DEBUG) printf("\n\nRoot list before extraction:\n");
+    if(DEBUG) print_heap(heap->min);
+    extracted_min = fib_heap_extract_min(heap);
+    if(DEBUG) printf("Root list after extracting %d:\n", extracted_min->id);
+    if(DEBUG) print_heap(heap->min);
 
-  extracted_min = fib_heap_extract_min(heap);
-  do{
     min_v = extracted_min->id;
     min_d = extracted_min->key;
 
@@ -239,17 +245,130 @@ void DijkstraFibHeap(nodeitem N[], int Or, int Nm)
     {
       v = edge->end;
       dv = min_d + edge->length;
-      printf("%d->%d with weight %d\n",min_v, v, edge->length);
       if (N[v].key > dv) {
+        if(DEBUG) old_value = N[v].key;
+        if(DEBUG) printf("\nTrying to find node %d in heap to change key from %d to %d\n\n",v,old_value,dv);
+        //Inserting element if not already inserted. 
+        if (N[v].visited == 0)
+        {
+          FIB_NODE_array[v] = fib_heap_insert(heap, new_node, N[v].key, v);
+          N[v].visited = 1;
+          if(DEBUG) printf("Added %d to heap. N = %d\n",N[i].id,heap->n);
+        }
         N[v].key = dv;
         N[v].P = min_v;
-        printf("Trying to find node %d in heap to change key from %d to %d\n",v,(edge->length),dv);
-        decrease_key_helper(heap, heap->min, v, dv);
+        //Decrease the key, and add parent node back to queue?
+        fib_heap_decrease_key(heap,FIB_NODE_array[v],dv);
       }
       edge = edge->next;
     }
-    extracted_min = fib_heap_extract_min(heap);
-  }while (heap->min != NULL);
+  }
+   if(DEBUG) printf("\nItems in heap: %d\n", heap->n);
   return;
 }
+
+/* Implementation of Dikstra's Algorithm with a Binomial Heap*/
+void DijkstraBinHeap(nodeitem N[], int Or, int Nm)
+{
+   BinomialHeap<nodeitem> *thisHeap = new BinomialHeap<nodeitem>;
+   struct arc *edge;
+   nodeitem *node;
+   int v, dv, neighborDist, neighborID;
+   int Mark[Nm+1];
+   for (int i=1; i<=Nm; i++){
+        Mark[i]=-1;
+    }
+
+    node = &N[Or];
+    node->key = 0;
+    thisHeap->insert(node, node->id);
+
+    /*for (int i = 1; i < Nm+1; i++)
+    {
+      printf("Inside the for loop at %d iteration\n", i);
+      thisHeap->insert(&N[i], N[i].key);
+    }*/
+
+    // Main loop
+    while(!(thisHeap->isEmpty()))
+    {
+        node = thisHeap->popMin()->item;
+        v = node->id;
+        arc * edge = node->first;
+        while (edge != NULL)
+        {   
+            nodeitem * neighbor = &N[edge->end];
+            dv = node->key + edge->length;
+            neighborDist = neighbor->key;
+            neighborID = neighbor->id;
+            if ( neighborDist > dv)
+            {   
+                if (Mark[neighborID] < 1){
+                  thisHeap->insert(neighbor, neighbor->id);
+                  Mark[neighborID] = 1;
+                }
+                //N[neighborID].key = dv;
+                //N[neighborID].P = v;
+                neighbor->key = dv;
+                neighbor->P = v;
+                thisHeap->decreaseKey(neighbor->id, dv);
+            }
+            edge = edge->next;
+        }
+        Mark[v] = 1;
+    }
+} /* end DijkstraHeap */ 
+
+void DijkstraQuakeHeap(nodeitem N[], int Or, int Nm)
+{
+    quakeHeap<nodeitem> *thisHeap;
+    struct arc *edge;
+    int v, dv, min_d, min_v;
+    int mark[Nm + 1];
+    node<generic_node>* phone_book[Nm+1];
+
+    for(int q = 0; q < Nm + 1; q++){
+	    mark[q] = 0;
+    }
+
+    thisHeap = new quakeHeap<nodeitem>(0.75);
+    nodeitem *temp;
+
+    N[Or].key = 0;  //Set starting node distance to 0.
+    N[Or].id = Or;
+    mark[Or] = 1;
+    min_v = Or;     //Setting current node, min vertex
+    min_d = 0;      //Setting current minimum distance to 0, as graph is unexplored.
+
+    phone_book[Or] =thisHeap->insert(&N[min_v]); //Adds pointer of the origin node to the heap.
+
+    while (thisHeap->IsEmpty() == 0) //While priority queue isn't empty...
+    {
+      // Add min node from heap to workspace...
+      temp = thisHeap->deleteMin();
+      
+      min_v = temp->id;
+      min_d = temp->key;
+
+      // And explore edges
+      edge = N[min_v].first;  //Get the first of any edges from a node.
+      while (edge != NULL){   //explore the outgoing arcs of u
+          v = edge->end;      //Node at the other end of the edge.
+          dv = min_d + edge->length;
+          nodeitem *debug_helper = &N[v];
+          if (N[v].key > dv){ //If v's current distance is greater than the distance from source to u + u to v...
+            if(!mark[v])
+            {
+              phone_book[v] = thisHeap->insert(&N[v]); 
+              mark[v] = 1;
+            }
+            N[v].key = dv;  //Update v's distance to the new shorter path.
+            N[v].P = min_v; //Set node v's parent to the current node, as it yields a shorter path.
+            thisHeap->decreaseKey(phone_book[v], dv);
+          }                   //if D > dv
+          edge = edge->next;
+      }           // while edge
+    }
+} /* end DijkstraHeap */
+
 #endif

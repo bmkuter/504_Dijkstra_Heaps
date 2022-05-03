@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const int MAX_SIZE = 200000; //max amount of elements 
+//const int MAX_SIZE = 200000; //max amount of elements 
 const int LOGMAX_SIZE = 64;
 
 template <typename Object>
@@ -45,7 +45,7 @@ public:
       for(int i = 0; i < LOGMAX_SIZE; i++){heights[i] = 0;}
    };
 
-   void insert(Object* item){
+   node<Object> * insert(Object* item){
        node<Object> * newnode = new node<Object>;
        newnode->val = item->key;
        newnode->item = item;
@@ -57,12 +57,13 @@ public:
        heights[0]++;
        mapping.insert({item->position, newnode});
        rootInsert(newnode);
-       return;
+       return newnode;
    };       
 
-   void decreaseKey(int pos, int valin)
+   void decreaseKey(node<Object> * pos, int valin)
    {
-       node<Object> * temp, *found = (mapping.find(pos))->second;
+       //node<Object> * temp, *found = (mapping.find(pos))->second;
+       node<Object> * temp, *found = pos;
        found->val = valin;
        if(found->parent == NULL){}
        else if(found == found->parent->left){found->parent->left = NULL;}

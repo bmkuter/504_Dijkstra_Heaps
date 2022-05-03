@@ -18,8 +18,6 @@ Or = 1 set source node to 1 ;
 
 using namespace std;
 
-
-
 void printOutput(nodeitem N[], int Origin, int Nm, ofstream & ofile){
   int Nd = 10;  // You can change the number destinations  selected here.
   int SelectDestinations[Nd + 1]; // nodes go from 1 ,,,, Nm
@@ -78,6 +76,7 @@ int main(int argc, char *argv[])
 	  Nodes[i].key = LARGE;
 	  Nodes[i].P = -1;
 	  Nodes[i].position = -1;
+    Nodes[i].visited = 0;
   }
   // Read arcs: we create these dynamically, store them in linked lists
   for (int i=0;i<Na;i++){
@@ -91,13 +90,14 @@ int main(int argc, char *argv[])
   Or = 1; // origin node
   ofstream outfile(strcat(argv[1],"_out"));
 
-  cout << "CALLING Dijkstra Simple\n" << endl;
+  cout << "CALLING Dijkstra Simple" << endl;
   outfile << "Dijkstra Simple\n"<< endl;
   start = chrono::steady_clock::now();
   Dijkstra(Nodes,Or,Nm);
   stop = chrono::steady_clock::now();
   difference_in_time = stop - start;
   difference_in_seconds = double(difference_in_time.count());
+  cout << "CPU TIME in SECS " << difference_in_seconds<<endl<< endl;
   outfile << "CPU TIME in SECS " << difference_in_seconds<<endl;
   outfile << endl;
 
@@ -109,15 +109,17 @@ int main(int argc, char *argv[])
 	  Nodes[i].key = LARGE;
 	  Nodes[i].P = -1;
 	  Nodes[i].position = -1;
+    Nodes[i].visited = 0;
   }
 
-  cout << "CALLING Dijkstra Heap\n" << endl;
+  cout << "CALLING Dijkstra Heap" << endl;
   outfile << "Dijkstra Heap\n"<< endl;
   start = chrono::steady_clock::now();
   DijkstraHeap(Nodes,Or,Nm);
   stop = chrono::steady_clock::now();
   difference_in_time = stop - start;
   difference_in_seconds = double(difference_in_time.count());
+  cout << "CPU TIME in SECS " << difference_in_seconds<<endl<< endl;
   outfile << "CPU TIME in SECS " << difference_in_seconds<<endl;
   outfile << endl;
 
@@ -129,15 +131,17 @@ int main(int argc, char *argv[])
 	  Nodes[i].key = LARGE;
 	  Nodes[i].P = -1;
 	  Nodes[i].position = -1;
+    Nodes[i].visited = 0;
   }
 
-  cout << "CALLING Bellman-Ford\n" << endl;
+  cout << "CALLING Bellman-Ford" << endl;
   outfile << "Bellman-Ford\n"<< endl;
   start = chrono::steady_clock::now();
   BellmanFord(Nodes,Or,Nm);
   stop = chrono::steady_clock::now();
   difference_in_time = stop - start;
   difference_in_seconds = double(difference_in_time.count());
+  cout << "CPU TIME in SECS " << difference_in_seconds<<endl<< endl;
   outfile << "CPU TIME in SECS " << difference_in_seconds<<endl;
   outfile << endl;
 
@@ -149,20 +153,88 @@ int main(int argc, char *argv[])
 	  Nodes[i].key = LARGE;
 	  Nodes[i].P = -1;
 	  Nodes[i].position = -1;
+    Nodes[i].visited = 0;
   }
 
-  cout << "CALLING Dijkstra Fib Heap\n" << endl;
+  cout << "CALLING Dijkstra Fib Heap" << endl;
   outfile << "Dijkstra Fib Heap\n"<< endl;
   start = chrono::steady_clock::now();
   DijkstraFibHeap(Nodes,Or,Nm);
   stop = chrono::steady_clock::now();
   difference_in_time = stop - start;
   difference_in_seconds = double(difference_in_time.count());
+  cout << "CPU TIME in SECS " << difference_in_seconds<<endl<< endl;
   outfile << "CPU TIME in SECS " << difference_in_seconds<<endl;
   outfile << endl;
 
   printOutput(Nodes,Or,Nm,outfile);
 
+  // Reset for next algorithm
+
+  for (int i=0;i<=Nm;i++){
+	  Nodes[i].key = LARGE;
+	  Nodes[i].P = -1;
+	  Nodes[i].position = -1;
+    Nodes[i].visited = 0;
+  }
+
+  cout << "CALLING Dijkstra Binomial Heap" << endl;
+  outfile << "Dijkstra Binomial Heap\n"<< endl;
+  start = chrono::steady_clock::now();
+  DijkstraBinHeap(Nodes,Or,Nm);
+  stop = chrono::steady_clock::now();
+  difference_in_time = stop - start;
+  difference_in_seconds = double(difference_in_time.count());
+  cout << "CPU TIME in SECS " << difference_in_seconds<<endl<< endl;
+  outfile << "CPU TIME in SECS " << difference_in_seconds<<endl;
+  outfile << endl;
+
+  printOutput(Nodes,Or,Nm,outfile);
+
+  // Reset for next algorithm
+
+  for (int i=0;i<=Nm;i++){
+	  Nodes[i].key = LARGE;
+	  Nodes[i].P = -1;
+	  Nodes[i].position = -1;
+    Nodes[i].visited = 0;
+  }
+
+  cout << "CALLING Dijkstra Quake Heap" << endl;
+  outfile << "Dijkstra Quake Heap\n"<< endl;
+  start = chrono::steady_clock::now();
+  DijkstraQuakeHeap(Nodes,Or,Nm);
+  stop = chrono::steady_clock::now();
+  difference_in_time = stop - start;
+  difference_in_seconds = double(difference_in_time.count());
+  cout << "CPU TIME in SECS " << difference_in_seconds<<endl<<endl;
+  outfile << "CPU TIME in SECS " << difference_in_seconds<<endl;
+  outfile << endl;
+
+  printOutput(Nodes,Or,Nm,outfile);
+
+    // Reset for next algorithm
+
+  for (int i=0;i<=Nm;i++){
+	  Nodes[i].key = LARGE;
+	  Nodes[i].P = -1;
+	  Nodes[i].position = -1;
+    Nodes[i].visited = 0;
+  }
+/*
+  cout << "CALLING Dijkstra Rank-Pairing Heap" << endl;
+  outfile << "Dijkstra Rank-Pairing Heap\n"<< endl;
+  start = chrono::steady_clock::now();
+  DijkstraFibHeap(Nodes,Or,Nm);
+  stop = chrono::steady_clock::now();
+  difference_in_time = stop - start;
+  difference_in_seconds = double(difference_in_time.count());
+  cout << "CPU TIME in SECS " << difference_in_seconds<<endl<<endl;
+  outfile << "CPU TIME in SECS " << difference_in_seconds<<endl;
+  outfile << endl;
+
+  printOutput(Nodes,Or,Nm,outfile);
+*/
   outfile.close();
 
   return 0;
