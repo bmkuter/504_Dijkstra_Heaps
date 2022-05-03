@@ -1,12 +1,12 @@
 #ifndef QUAKEHEAP_H_
 #define QUAKEHEAP_H_
 
-#include <vector>
 #include <unordered_map>
+#include <iostream>
 
 using namespace std;
 
-const int MAX_SIZE = 200000; //the maximum amount of elements our heap should have.
+const int MAX_SIZE = 200000; //max amount of elements 
 const int LOGMAX_SIZE = 64;
 
 template <typename Object>
@@ -39,6 +39,8 @@ public:
       elements = 0;
       alpha = inalpha;
       min = NULL;
+      tail = NULL;
+      head = NULL;
       roots = 0;
       for(int i = 0; i < LOGMAX_SIZE; i++){heights[i] = 0;}
    };
@@ -52,69 +54,73 @@ public:
        newnode->right = NULL;
        newnode->parent = NULL;
        elements++;
-       mapping.insert({item->position, newnode});
        heights[0]++;
-       nodeList<Object> * newnodeList;
-       newnodeList = rootInsert(newnode);
-       if(newnode->val < min->data->val){min = newnodeList;}
+       mapping.insert({item->position, newnode});
+       rootInsert(newnode);
        return;
    };       
 
    void decreaseKey(int pos, int valin)
    {
-       node<Object> * found = (mapping.find(pos))->second;
+       node<Object> * temp, *found = (mapping.find(pos))->second;
        found->val = valin;
        if(found->parent == NULL){}
        else if(found == found->parent->left){found->parent->left = NULL;}
-       else{found->parent->right = NULL;}
-       fixHeights(found->parent);
-       found->parent = NULL;
+       else if(found == found->parent->right){found->parent->right = NULL;}
+       //fixHeights(found->parent);
+       if(found->parent != NULL){found->parent = NULL; rootInsert(found);}
+       else{
+		nodeList<Object> * temp2 = head;
+       		while(temp2 != NULL){
+			if(temp2->data->val < min->data->val){min = temp2;}
+       			temp2 = temp2->next;
+       		}
+       }
+       temp = found->right;
+       while(temp != NULL){
+		temp->parent = NULL;
+		rootInsert(temp);
+       		temp = temp->right;
+		if(temp == NULL){break;}
+                else if(temp->parent != NULL){temp->parent->right = NULL;}
+       }
        return;
    };
 
    Object * deleteMin(){
        Object * toReturn = min->data->item;
        node<Object> * cnode = min->data->left;
-       if(cnode != NULL){
-            rootInsert(cnode);
-            while(cnode->right != NULL){
-                rootInsert(cnode->right);
-                cnode = cnode->right;
-                cnode->parent->right = NULL;
-                cnode->parent = NULL;
-                fixHeights(cnode);
-            }
-            rootInsert(cnode);
-            fixHeights(cnode);
-            cnode->parent = NULL;
+       while(cnode != NULL){
+		cnode->parent = NULL;
+		rootInsert(cnode);
+       		cnode = cnode->right;
+		if(cnode == NULL){break;}
+                else if(cnode->parent != NULL){cnode->parent->right = NULL;}
+                //fixHeights(cnode);
        }
        elements--;
        heights[min->data->height]--;
-       nodeList<Object> * temp, * dnode = min;
-       min = min->next;
+       nodeList<Object> * dnode = min;
+       min = head;
        rootRemove(dnode);
-       if(min != NULL){dnode = min->next;
-       while(dnode != NULL){
-           if(dnode->data->val < min->data->val){
-		temp = dnode->next;
-		dnode->prev->next = temp;
-		if(temp != NULL){temp->prev = dnode->prev;}
-		dnode->next = min;
-		dnode->prev = NULL;
-		min->prev = dnode;
-		min = dnode;
-	   }
-           dnode = dnode->next;
+       if(min != NULL){
+		dnode = min->next;
+       		while(dnode != NULL){
+           		if(dnode->data->val < min->data->val){
+				min = dnode;
+	   		}
+           	dnode = dnode->next;
+       		}
        }
-       }
-       while(mergeTrees()){}
+       mergeTrees();
+       //while(mergeTrees()){}
        for(int i = 0; i < LOGMAX_SIZE - 1; i++){
            if(heights[i+1] > alpha*heights[i]){
-               quake(i);
+               //quake(i);
                break;
            }
        }
-       while(mergeTrees()){}
+       //while(mergeTrees()){}
        return toReturn;
    };
 
@@ -124,6 +130,8 @@ public:
    
 protected:
    nodeList<Object> * min;
+   nodeList<Object> * head;
+   nodeList<Object> * tail;
    unordered_map<int, node<Object> *> mapping;
    int roots;
    int elements;
@@ -137,7 +145,8 @@ private:
             first->left = second;
             second->right = temp;
             second->parent = first;
-            if(first->height < LOGMAX_SIZE && first->height <= second->height){
+            if(temp != NULL){temp->parent = second;}
+	    if(first->height < LOGMAX_SIZE && first->height <= second->height){
                 heights[first->height]--;
                 first->height = second->height + 1;
                 heights[first->height]++;
@@ -149,6 +158,7 @@ private:
             second->left = first;
             first->right = temp;
             first->parent = second;
+	    if(temp != NULL){temp->parent = first;}
             if(second->height < LOGMAX_SIZE && second->height <= first->height){
                 heights[second->height]--;
                 second->height = first->height + 1;
@@ -159,13 +169,13 @@ private:
     };
     
     bool mergeTrees(){
-        if(min == NULL){return false;}
+        if(head == NULL){return false;}
         nodeList<Object> * foundHeights[LOGMAX_SIZE];
         int i;
         bool del = false;
         bool found = false;
         node<Object> * lesser;
-        nodeList<Object> * temp, * current = min;
+        nodeList<Object> * temp, * current = head;
         for(i = 0; i < LOGMAX_SIZE; i++){foundHeights[i] = NULL;}
         
         do{
@@ -195,29 +205,24 @@ private:
         if(toInsert == NULL){return NULL;}
         nodeList<Object> * newInsert = new nodeList<Object>;
         newInsert->data = toInsert;
-        newInsert->prev = min;
-        if(min == NULL){
+        newInsert->next = NULL;
+        if(head == NULL){
 		min = newInsert;
-		min->prev = NULL;
-		min->next = NULL;
+		head = newInsert;
+		newInsert->prev = NULL;
 	}
-        else if(min->next != NULL){
-            newInsert->next = min->next;
-            min->next->prev = newInsert;
-            min->next = newInsert;
+        else if(tail == NULL){
+            tail = newInsert;
+            newInsert->prev = head;
+            head->next = newInsert;
         }
         else{
-            min->next = newInsert;
-	    newInsert->next = NULL;
+            tail->next = newInsert;
+	    newInsert->prev = tail;
+	    tail = newInsert;
 	}
         
 	if(newInsert->data->val < min->data->val){
-		nodeList<Object> * temp = newInsert->next;
-		newInsert->prev->next = temp;
-		newInsert->next = min;
-		min->prev = newInsert->prev;
-		if(temp != NULL){temp->prev = newInsert->prev;}
-		newInsert->prev = NULL;
 		min = newInsert;
 	}
 
@@ -225,15 +230,32 @@ private:
     };
     
     void rootRemove(nodeList<Object> * toRemove){
-        nodeList<Object> * anext = toRemove->next, * aprev = toRemove->prev;
-        if(anext != NULL){
-            anext->prev = aprev;
-            if(aprev != NULL){aprev->next = anext;}
-        }
+        if(toRemove == NULL){return;}
+	nodeList<Object> * anext = toRemove->next, * aprev = toRemove->prev;
+        
+	if(toRemove == head){
+		head = head->next;
+		if(head != NULL){head->prev = NULL;}
+	}
+	else if(toRemove == tail){
+		tail = tail->prev;
+		tail->next = NULL;
+		if(tail == head){tail = NULL;}
+	}
 	else{
-	        if(aprev != NULL){aprev->next = NULL;}
-		else{min = NULL;}
-        }
+		anext->prev = aprev;
+		aprev->next = anext;
+	}
+
+	if(toRemove == min){
+		anext = head;
+		min = head;
+		while(anext != NULL){
+			if(anext->data->val < min->data->val){min = anext;}
+			anext = anext->next;
+		}
+	}
+
         //TODO logic here
         delete toRemove;
         return;
@@ -243,6 +265,7 @@ private:
         if(start == NULL){return 0;}
 	heights[start->height]--;
         if((start->left == NULL && start->right == NULL)){
+	    heights[start->height]--;
 	    start->height = 0;
 	    heights[0]++;
             return 0;
@@ -256,7 +279,7 @@ private:
     };
     
     void quake(int toQuake){
-        nodeList<Object> * cnode = min->next;
+        nodeList<Object> * cnode = head;
         node<Object> * dnode;
         while(cnode != NULL){
             if(cnode->data->height > toQuake){
@@ -269,8 +292,6 @@ private:
                    fixHeights(dnode);
                 }
                 rootInsert(dnode);
-                dnode->parent = NULL;
-                fixHeights(dnode);
             }
             cnode = cnode->next;
         }
