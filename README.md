@@ -9,7 +9,7 @@
 Github: https://github.com/bmkuter/504_Dijkstra_Heaps/tree/bens_branch
 
 # Abstract
-To explore the performance differences from varying heaps on Dijkstra’s path find algorithm, we implemented Fibonacci Heaps, Binomial Heaps, Quake Heaps, and Rank-Pairing Heaps inside a familiar Dijkstra path finding framework. Overall our implementations fared well, with some of our implementations falling around the same order of magnitude as our benchmark heap implementation. 
+To explore the performance differences from varying heaps on Dijkstra’s path find algorithm, we implemented Fibonacci Heaps, Binomial Heaps, Quake Heaps, and Rank-Pairing Heaps inside a familiar Dijkstra path finding framework. Overall our implementations fared well, with some of our implementations falling around the same order of magnitude as our benchmark heap implementation. High overheads and extraneous implementations proved to be bottlenecks in our approaches, but performance has improved through several iterations of optimisation.
 
 ## Implementation Notes:
 ### Fibonacci Heap:
