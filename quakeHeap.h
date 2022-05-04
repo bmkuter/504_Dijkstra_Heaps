@@ -55,7 +55,7 @@ public:
        newnode->parent = NULL;
        elements++;
        heights[0]++;
-       mapping.insert({item->position, newnode});
+       //mapping.insert({item->position, newnode});
        rootInsert(newnode);
        return newnode;
    };       
@@ -68,7 +68,7 @@ public:
        if(found->parent == NULL){}
        else if(found == found->parent->left){found->parent->left = NULL;}
        else if(found == found->parent->right){found->parent->right = NULL;}
-       //fixHeights(found->parent);
+       fixHeights(found->parent);
        if(found->parent != NULL){found->parent = NULL; rootInsert(found);}
        else{
 		nodeList<Object> * temp2 = head;
@@ -115,9 +115,9 @@ public:
        }
        mergeTrees();
        //while(mergeTrees()){}
-       for(int i = 0; i < LOGMAX_SIZE - 1; i++){
+       for(int i = 42; i < LOGMAX_SIZE - 1; i++){
            if(heights[i+1] > alpha*heights[i]){
-               //quake(i);
+               quake(i);
                break;
            }
        }
@@ -133,7 +133,7 @@ protected:
    nodeList<Object> * min;
    nodeList<Object> * head;
    nodeList<Object> * tail;
-   unordered_map<int, node<Object> *> mapping;
+   //unordered_map<int, node<Object> *> mapping;
    int roots;
    int elements;
    int heights[LOGMAX_SIZE];
@@ -292,7 +292,7 @@ private:
                    dnode->parent = NULL;
                    fixHeights(dnode);
                 }
-                rootInsert(dnode);
+                //rootInsert(dnode);
             }
             cnode = cnode->next;
         }

@@ -20,6 +20,7 @@
 #include "ben_fib_heap.h"
 #include "binomialHeap.h"
 #include "quakeHeap.h" 
+#include "rp_heap.h"
 
 #define LARGE1 9999999
 
@@ -331,7 +332,7 @@ void DijkstraQuakeHeap(nodeitem N[], int Or, int Nm)
 	    mark[q] = 0;
     }
 
-    thisHeap = new quakeHeap<nodeitem>(0.75);
+    thisHeap = new quakeHeap<nodeitem>(0.95);
     nodeitem *temp;
 
     N[Or].key = 0;  //Set starting node distance to 0.
@@ -370,5 +371,64 @@ void DijkstraQuakeHeap(nodeitem N[], int Or, int Nm)
       }           // while edge
     }
 } /* end DijkstraHeap */
+
+/***************** DIJKSTRA'S IMPLEMENTATION WITH A PRIORITY QUEUE ************************/
+void DijkstraRankPairingHeap(nodeitem N[], int Or, int Nm)
+{
+   rp_heap<nodeitem> *thisHeap = new rp_heap<nodeitem>();
+   heap_node<nodeitem>* phone_book[Nm+1];
+   struct arc *edge;
+   nodeitem *node;
+   int v, dv, min_d, min_v;
+   int dV;  /// dV == "destination vertex" a.k.a. the end of an edge
+   
+   /// ASSIGNMENT: You write a Dijkstra algorithm using a binary heap; you can reuse the one from HW 2 with minor variations
+
+   /// Use N[].key to track distance from source node (I think)
+   /// This will be the metric used to control the order/priority of the Binary Heap Queue
+   /// **NOTE** N[].key is initialized in "shortest_paths.cpp" as 9999999
+
+   /// Initializing origin
+   N[Or].key = 0;
+
+   /// Pushing all vertices into Heap
+   for (int j = 1; j <= Nm; j++) {  /// <-- we only use Nodes[1] to Nodes[Nm]
+        phone_book[j] = thisHeap->insert(&N[j]);
+   }
+
+   while (!thisHeap->IsEmpty()) {
+        /// pull min element
+        node = thisHeap->extract_min();         /// ****** RENAMED THIS FUNCTION!!! ********
+        //node = thisHeap->remove_min();
+
+        min_v = node->id;
+        min_d = node->key;
+
+        /// mark node as visited -> no need ... you can use "P" attribute to identify if element has been "visited"
+
+        /// update distances to edges in heap
+        edge = node->first;
+        //dV = edge->end;
+        while (edge != nullptr) {
+            v = edge->end;      //Node at the other end of the edge.
+            dv = min_d + edge->length;
+            /// Conditions
+            /// (1) N[edge->end].position != -1  --> checks if end of the edge is in the PQ or already part of shortest paths
+            /// (2) N[edge->end].key > node->key + edge->length --> checking if a distance update is necessary
+            //if ( (N[v].position != -1) and (N[v].key > node->key + edge->length)) {
+            if (N[v].key > dv){
+                N[v].key = dv;  //Update v's distance to the new shorter path.
+                N[v].P = min_v; //Set node v's parent to the current node, as it yields a 
+                //thisHeap->decreaseKey(N[dV].position, (node->key + edge->length));
+                thisHeap->decreaseKey(phone_book[v], (node->key + edge->length));     /// ***** CHANGED THE INPUT OF THIS FUNCTION SLIGHTLY ******
+            }
+            /// Updating for next iteration
+            edge = edge->next;
+            //dV = edge->end;
+        }
+   }
+
+
+} /************* end DijkstraHeap ****************/
 
 #endif

@@ -221,20 +221,20 @@ int main(int argc, char *argv[])
 	  Nodes[i].position = -1;
     Nodes[i].visited = 0;
   }
-/*
-  cout << "CALLING Dijkstra Rank-Pairing Heap" << endl;
-  outfile << "Dijkstra Rank-Pairing Heap\n"<< endl;
-  start = chrono::steady_clock::now();
-  DijkstraFibHeap(Nodes,Or,Nm);
-  stop = chrono::steady_clock::now();
-  difference_in_time = stop - start;
-  difference_in_seconds = double(difference_in_time.count());
-  cout << "CPU TIME in SECS " << difference_in_seconds<<endl<<endl;
-  outfile << "CPU TIME in SECS " << difference_in_seconds<<endl;
-  outfile << endl;
 
-  printOutput(Nodes,Or,Nm,outfile);
-*/
+  // cout << "CALLING Dijkstra Rank-Pairing Heap" << endl;
+  // outfile << "Dijkstra Rank-Pairing Heap\n"<< endl;
+  // start = chrono::steady_clock::now();
+  // DijkstraRankPairingHeap(Nodes,Or,Nm);
+  // stop = chrono::steady_clock::now();
+  // difference_in_time = stop - start;
+  // difference_in_seconds = double(difference_in_time.count());
+  // cout << "CPU TIME in SECS " << difference_in_seconds<<endl<<endl;
+  // outfile << "CPU TIME in SECS " << difference_in_seconds<<endl;
+  // outfile << endl;
+
+  // printOutput(Nodes,Or,Nm,outfile);
+
   outfile.close();
 
   return 0;

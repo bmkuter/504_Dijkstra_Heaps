@@ -1,6 +1,6 @@
 Dijkstra Simple
 
-CPU TIME in SECS 0.531756
+CPU TIME in SECS 0.493635
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
@@ -34,7 +34,7 @@ Shortest distance for 1 to 10001 is 402
 
 Dijkstra Heap
 
-CPU TIME in SECS 0.00692127
+CPU TIME in SECS 0.00693858
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
@@ -68,7 +68,7 @@ Shortest distance for 1 to 10001 is 402
 
 Bellman-Ford
 
-CPU TIME in SECS 0.005066
+CPU TIME in SECS 0.00486432
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
@@ -102,7 +102,7 @@ Shortest distance for 1 to 10001 is 402
 
 Dijkstra Fib Heap
 
-CPU TIME in SECS 0.0105617
+CPU TIME in SECS 0.0101441
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
@@ -136,7 +136,7 @@ Shortest distance for 1 to 10001 is 402
 
 Dijkstra Binomial Heap
 
-CPU TIME in SECS 0.0277805
+CPU TIME in SECS 0.00918996
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
@@ -170,7 +170,7 @@ Shortest distance for 1 to 10001 is 402
 
 Dijkstra Quake Heap
 
-CPU TIME in SECS 0.0219885
+CPU TIME in SECS 0.0181756
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
