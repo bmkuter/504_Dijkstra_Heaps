@@ -376,10 +376,8 @@ void DijkstraQuakeHeap(nodeitem N[], int Or, int Nm)
 void DijkstraRankPairingHeap(nodeitem N[], int Or, int Nm)
 {
    rp_heap<nodeitem> *thisHeap = new rp_heap<nodeitem>();
-   heap_node<nodeitem>* phone_book[Nm+1];
    struct arc *edge;
    nodeitem *node;
-   int v, dv, min_d, min_v;
    int dV;  /// dV == "destination vertex" a.k.a. the end of an edge
    
    /// ASSIGNMENT: You write a Dijkstra algorithm using a binary heap; you can reuse the one from HW 2 with minor variations
@@ -393,7 +391,7 @@ void DijkstraRankPairingHeap(nodeitem N[], int Or, int Nm)
 
    /// Pushing all vertices into Heap
    for (int j = 1; j <= Nm; j++) {  /// <-- we only use Nodes[1] to Nodes[Nm]
-        phone_book[j] = thisHeap->insert(&N[j]);
+        thisHeap->insert(&N[j]);
    }
 
    while (!thisHeap->IsEmpty()) {
@@ -401,26 +399,20 @@ void DijkstraRankPairingHeap(nodeitem N[], int Or, int Nm)
         node = thisHeap->extract_min();         /// ****** RENAMED THIS FUNCTION!!! ********
         //node = thisHeap->remove_min();
 
-        min_v = node->id;
-        min_d = node->key;
-
         /// mark node as visited -> no need ... you can use "P" attribute to identify if element has been "visited"
 
         /// update distances to edges in heap
         edge = node->first;
         //dV = edge->end;
         while (edge != nullptr) {
-            v = edge->end;      //Node at the other end of the edge.
-            dv = min_d + edge->length;
+            dV = edge->end;
             /// Conditions
             /// (1) N[edge->end].position != -1  --> checks if end of the edge is in the PQ or already part of shortest paths
             /// (2) N[edge->end].key > node->key + edge->length --> checking if a distance update is necessary
-            //if ( (N[v].position != -1) and (N[v].key > node->key + edge->length)) {
-            if (N[v].key > dv){
-                N[v].key = dv;  //Update v's distance to the new shorter path.
-                N[v].P = min_v; //Set node v's parent to the current node, as it yields a 
+            if ( (N[dV].position != -1) and (N[dV].key > node->key + edge->length)) {
+                N[dV].P = node->id;
                 //thisHeap->decreaseKey(N[dV].position, (node->key + edge->length));
-                thisHeap->decreaseKey(phone_book[v], (node->key + edge->length));     /// ***** CHANGED THE INPUT OF THIS FUNCTION SLIGHTLY ******
+                thisHeap->decreaseKey(N[dV].id, (node->key + edge->length));     /// ***** CHANGED THE INPUT OF THIS FUNCTION SLIGHTLY ******
             }
             /// Updating for next iteration
             edge = edge->next;

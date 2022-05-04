@@ -1,6 +1,6 @@
 Dijkstra Simple
 
-CPU TIME in SECS 0.493635
+CPU TIME in SECS 0.494285
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
@@ -34,7 +34,7 @@ Shortest distance for 1 to 10001 is 402
 
 Dijkstra Heap
 
-CPU TIME in SECS 0.00693858
+CPU TIME in SECS 0.00699876
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
@@ -68,7 +68,7 @@ Shortest distance for 1 to 10001 is 402
 
 Bellman-Ford
 
-CPU TIME in SECS 0.00486432
+CPU TIME in SECS 0.00513538
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
@@ -102,7 +102,7 @@ Shortest distance for 1 to 10001 is 402
 
 Dijkstra Fib Heap
 
-CPU TIME in SECS 0.0101441
+CPU TIME in SECS 0.0103648
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
@@ -136,7 +136,7 @@ Shortest distance for 1 to 10001 is 402
 
 Dijkstra Binomial Heap
 
-CPU TIME in SECS 0.00918996
+CPU TIME in SECS 0.00952499
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
@@ -170,7 +170,41 @@ Shortest distance for 1 to 10001 is 402
 
 Dijkstra Quake Heap
 
-CPU TIME in SECS 0.0181756
+CPU TIME in SECS 0.0187674
+
+Shortest distance for 1 to 1001 is 159
+1001 --> 1002 --> 502 --> 2 --> 1
+
+Shortest distance for 1 to 2001 is 148
+2001 --> 2002 --> 1502 --> 1002 --> 502 --> 2 --> 1
+
+Shortest distance for 1 to 3001 is 203
+3001 --> 308 --> 8531 --> 5196 --> 4703 --> 1143 --> 643 --> 573 --> 73 --> 1
+
+Shortest distance for 1 to 4001 is 220
+4001 --> 3305 --> 8409 --> 8410 --> 7766 --> 7266 --> 6527 --> 6027 --> 5527 --> 5528 --> 573 --> 73 --> 1
+
+Shortest distance for 1 to 5001 is 242
+5001 --> 5501 --> 6001 --> 5539 --> 5538 --> 8259 --> 4146 --> 74 --> 73 --> 1
+
+Shortest distance for 1 to 6001 is 153
+6001 --> 5539 --> 5538 --> 8259 --> 4146 --> 74 --> 73 --> 1
+
+Shortest distance for 1 to 7001 is 254
+7001 --> 6501 --> 6001 --> 5539 --> 5538 --> 8259 --> 4146 --> 74 --> 73 --> 1
+
+Shortest distance for 1 to 8001 is 259
+8001 --> 8002 --> 8003 --> 7503 --> 1266 --> 1267 --> 767 --> 768 --> 8259 --> 4146 --> 74 --> 73 --> 1
+
+Shortest distance for 1 to 9001 is 184
+9001 --> 9501 --> 6386 --> 5886 --> 7226 --> 7726 --> 8226 --> 8225 --> 8224 --> 8223 --> 7723 --> 7223 --> 71 --> 72 --> 572 --> 1072 --> 1073 --> 573 --> 73 --> 1
+
+Shortest distance for 1 to 10001 is 402
+10001 --> 3177 --> 2677 --> 2678 --> 1643 --> 1143 --> 643 --> 573 --> 73 --> 1
+
+Dijkstra Rank-Pairing Heap
+
+CPU TIME in SECS 1.00683
 
 Shortest distance for 1 to 1001 is 159
 1001 --> 1002 --> 502 --> 2 --> 1
