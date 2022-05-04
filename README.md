@@ -1,10 +1,10 @@
 # 504_Dijkstra_Heaps
  
 # Team Information
-*Ian Chadwick  	U90596416  	ianjc
-*William Nilsen  	U12025523 	williamn
-*Benjamin Kuter  	U42809935  	bmkuter
-*Parker Dunn 		U67368938  	pgdunn
+* Ian Chadwick  	U90596416  	ianjc
+* William Nilsen  	U12025523 	williamn
+* Benjamin Kuter  	U42809935  	bmkuter
+* Parker Dunn 		U67368938  	pgdunn
 
 Github: https://github.com/bmkuter/504_Dijkstra_Heaps/tree/bens_branch
 
@@ -13,10 +13,10 @@ To explore the performance differences from varying heaps on Dijkstra’s path f
 
 ## Implementation Notes:
 ### Fibonacci Heap:
-	The Fibonacci Heap was implemented based on the pseudocode from CLRS.2 For the specific Dijkstra implementation, an additional array accessible by the node’s ID was utilized. The idea here is that instead of searching through the tree for a specific node based on the node’s ID during a decrease key operation, the pointer to that node could be saved in an accessory array d[]. When a node was inserted into the heap, that node’s address was also saved to the index in (object*)d[]. For example, when inserting node->id = 153,  d[153] = &node. This enabled O(1) access times to any node in the heap regardless of its place or level without the need to search through the tree for the node, avoiding a series of recursive search-calls.
+The Fibonacci Heap was implemented based on the pseudocode from CLRS.2 For the specific Dijkstra implementation, an additional array accessible by the node’s ID was utilized. The idea here is that instead of searching through the tree for a specific node based on the node’s ID during a decrease key operation, the pointer to that node could be saved in an accessory array d[]. When a node was inserted into the heap, that node’s address was also saved to the index in (object*)d[]. For example, when inserting node->id = 153,  d[153] = &node. This enabled O(1) access times to any node in the heap regardless of its place or level without the need to search through the tree for the node, avoiding a series of recursive search-calls.
 
 ### Binomial Heap:
-	The Binomial Heap was loosely based on pseudocode found on brilliant.org5, a few other implementations that were used as inspiration6,7, and the merge methodology discussed in lecture. The heap is templatized to accept the pointer to the nodeItem object, in order to take advantage of the structure provided in HW4 which we were using to compare our heap implementation runtimes. 
+The Binomial Heap was loosely based on pseudocode found on brilliant.org5, a few other implementations that were used as inspiration6,7, and the merge methodology discussed in lecture. The heap is templatized to accept the pointer to the nodeItem object, in order to take advantage of the structure provided in HW4 which we were using to compare our heap implementation runtimes. 
 The heap maintains a root linked list of binomial trees with the furthest left node as the entry point into the heap and indicated by a head pointer and a minPtr that points to the smallest element of the heap, for O(1) access to the minimum during popMin() operations. The root list terminates to the right with a null pointer after the last element. Each parent has a pointer to its child. Each child is part of a linked list with pointers to its siblings, its parent and its own linked list of children (if it has any children). 
 The heap uses “lazy inserts” to insert in O(1) time, by inserting new nodes into the root list to the left of the head and a pointer into an array (to find nodes in O(1) time). The minPtr is updated if the newly inserted element’s key is smaller than the current minimum. 
 Then, when popMin() is called, the minPtr is removed from the heap and its children and the remaining nodes are merged by the merge() function into a new root list without the minPtr. The minPtr is updated to the new minimum value during the merge(). The remaining heap will have the binomial heap structure of having at most one node of each degree in the root list. Due to the lazy insert, merge() has an amortized runtime of O(logn). The decreaseKey() function exchanges the item and the key with the parent node if the new key is less than the parent’s instead of moving nodes. This has worst-case complexity of O(logn).
@@ -46,10 +46,10 @@ The quake heap has several potential performance bottlenecks that could be impro
 Initially the binomial heap was a lot slower than expected and this is likely due to a few design choices that were made during the initial implementation that might not have the optimal performance. The first performance issue arose from using an unordered_map to track all the nodes that were added to the heap for O(1) lookup during decrease key. This had the advantage of having a dynamically adjusting size, but it came at a significant performance cost. Instead we decided to use an array of pointers to the bin_nodes with the same maximum size as the binary heap. This improved performance by an order of magnitude. We also changed the lists from doubly linked lists to singly linked lists, since the double list was not needed. This only slightly improved the performance by 10%. It was a little surprising that it was still slower than the binary heap, but the performance was slightly worse than the performance of the fibonacci heap which is to be expected.
 
 # References
-*Quake Heaps: A Simple Alternative to Fibonacci Heaps 
-*Algorithm for Fibonacci Heap Operations
-*Intro to Algorithms: CHAPTER 21: FIBONACCI HEAPS
-*Actually Implementing Dijkstra's Algorithm
-*Binomial Heap | Brilliant Math & Science Wiki
+* Quake Heaps: A Simple Alternative to Fibonacci Heaps 
+* Algorithm for Fibonacci Heap Operations
+* Intro to Algorithms: CHAPTER 21: FIBONACCI HEAPS
+* Actually Implementing Dijkstra's Algorithm
+* Binomial Heap | Brilliant Math & Science Wiki
 *138paulmiller/BinomialHeap: C++ Implementation of a binomial heap (github.com)
 *algorithmtutorprograms/BinomialHeaps.cpp at master · Bibeknam/algorithmtutorprograms (github.com)
