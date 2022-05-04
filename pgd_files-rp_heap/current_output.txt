@@ -1,0 +1,219 @@
+smallgraph.txt
+CALLING Dijkstra Simple
+
+CALLING Dijkstra Heap
+
+CALLING Dijkstra Rank Pairing Heap
+
+
+Printing roots at the start of 'extract_min'...
+Current minimum is 1 --- key = 0 & rank = 0
+
+*** PRINTING THE ROOTS ***
+ID: 1 --- key = 0 & rank = 0
+ID: 2 --- key = 99999999 & rank = 0
+ID: 3 --- key = 99999999 & rank = 0
+ID: 4 --- key = 99999999 & rank = 0
+ID: 5 --- key = 99999999 & rank = 0
+ID: 6 --- key = 99999999 & rank = 0
+ID: 7 --- key = 99999999 & rank = 0
+ID: 8 --- key = 99999999 & rank = 0
+ID: 9 --- key = 99999999 & rank = 0
+ID: 10 --- key = 99999999 & rank = 0
+ID: 11 --- key = 99999999 & rank = 0
+ID: 12 --- key = 99999999 & rank = 0
+ID: 13 --- key = 99999999 & rank = 0
+ID: 14 --- key = 99999999 & rank = 0
+ID: 15 --- key = 99999999 & rank = 0
+ID: 16 --- key = 99999999 & rank = 0
+ID: 17 --- key = 99999999 & rank = 0
+ID: 18 --- key = 99999999 & rank = 0
+ID: 19 --- key = 99999999 & rank = 0
+ID: 20 --- key = 99999999 & rank = 0
+ID: 21 --- key = 99999999 & rank = 0
+ID: 22 --- key = 99999999 & rank = 0
+ID: 23 --- key = 99999999 & rank = 0
+ID: 24 --- key = 99999999 & rank = 0
+ID: 25 --- key = 99999999 & rank = 0
+ID: 26 --- key = 99999999 & rank = 0
+ID: 27 --- key = 99999999 & rank = 0
+ID: 28 --- key = 99999999 & rank = 0
+ID: 29 --- key = 99999999 & rank = 0
+ID: 30 --- key = 99999999 & rank = 0
+
+Printing roots after calling 'merge()' in 'extract_min'...
+Current minimum is 1 --- key = 0 & rank = 4
+
+*** PRINTING THE ROOTS ***
+ID: 29 --- key = 99999999 & rank = 1
+ID: 25 --- key = 99999999 & rank = 2
+ID: 17 --- key = 99999999 & rank = 3
+ID: 1 --- key = 0 & rank = 4
+
+Here is the deleted element...
+1 --- key = 0 & rank = 4
+
+Printing roots at the end of 'extract_min'...
+Current minimum is 2 --- key = 99999999 & rank = 0
+
+*** PRINTING THE ROOTS ***
+ID: 2 --- key = 99999999 & rank = 0
+ID: 3 --- key = 99999999 & rank = 1
+ID: 5 --- key = 99999999 & rank = 2
+ID: 17 --- key = 99999999 & rank = 3
+ID: 9 --- key = 99999999 & rank = 3
+ID: 29 --- key = 99999999 & rank = 1
+ID: 25 --- key = 99999999 & rank = 2
+
+Printing roots at the start of 'extract_min'...
+Current minimum is 5 --- key = 4 & rank = 2
+
+*** PRINTING THE ROOTS ***
+ID: 2 --- key = 4 & rank = 0
+ID: 3 --- key = 99999999 & rank = 1
+ID: 22 --- key = 9 & rank = 0
+ID: 16 --- key = 18 & rank = 0
+ID: 8 --- key = 7 & rank = 0
+ID: 5 --- key = 4 & rank = 2
+ID: 17 --- key = 99999999 & rank = 0
+ID: 21 --- key = 10 & rank = 2
+ID: 9 --- key = 99999999 & rank = 3
+ID: 29 --- key = 99999999 & rank = 1
+ID: 25 --- key = 99999999 & rank = 2
+
+Printing roots after calling 'merge()' in 'extract_min'...
+Current minimum is 2 --- key = 4 & rank = 4
+
+*** PRINTING THE ROOTS ***
+ID: 17 --- key = 99999999 & rank = 0
+ID: 25 --- key = 99999999 & rank = 2
+ID: 8 --- key = 7 & rank = 3
+ID: 2 --- key = 4 & rank = 4
+
+Here is the deleted element...
+2 --- key = 4 & rank = 4
+
+Printing roots at the end of 'extract_min'...
+Current minimum is 5 --- key = 4 & rank = 2
+
+*** PRINTING THE ROOTS ***
+ID: 17 --- key = 99999999 & rank = 0
+ID: 25 --- key = 99999999 & rank = 2
+ID: 22 --- key = 9 & rank = 0
+ID: 3 --- key = 99999999 & rank = 1
+ID: 5 --- key = 4 & rank = 2
+ID: 8 --- key = 7 & rank = 3
+ID: 9 --- key = 99999999 & rank = 3
+
+Printing roots at the start of 'extract_min'...
+Current minimum is 5 --- key = 4 & rank = 0
+
+*** PRINTING THE ROOTS ***
+ID: 17 --- key = 99999999 & rank = 0
+ID: 25 --- key = 99999999 & rank = 0
+ID: 22 --- key = 9 & rank = 0
+ID: 26 --- key = 12 & rank = 0
+ID: 6 --- key = 24 & rank = 0
+ID: 3 --- key = 99999999 & rank = 1
+ID: 15 --- key = 21 & rank = 1
+ID: 5 --- key = 4 & rank = 0
+ID: 8 --- key = 7 & rank = 3
+ID: 9 --- key = 99999999 & rank = 2
+
+Printing roots after calling 'merge()' in 'extract_min'...
+Current minimum is 5 --- key = 4 & rank = 1
+
+*** PRINTING THE ROOTS ***
+ID: 5 --- key = 4 & rank = 1
+ID: 9 --- key = 99999999 & rank = 2
+ID: 8 --- key = 7 & rank = 4
+
+Here is the deleted element...
+5 --- key = 4 & rank = 1
+
+Printing roots at the end of 'extract_min'...
+Current minimum is 8 --- key = 7 & rank = 4
+
+*** PRINTING THE ROOTS ***
+ID: 6 --- key = 24 & rank = 0
+ID: 9 --- key = 99999999 & rank = 2
+ID: 8 --- key = 7 & rank = 4
+
+Printing roots at the start of 'extract_min'...
+Current minimum is 28 --- key = 5 & rank = 0
+
+*** PRINTING THE ROOTS ***
+ID: 6 --- key = 24 & rank = 0
+ID: 9 --- key = 99999999 & rank = 2
+ID: 28 --- key = 5 & rank = 0
+ID: 25 --- key = 5 & rank = 0
+ID: 24 --- key = 17 & rank = 0
+ID: 18 --- key = 6 & rank = 0
+ID: 29 --- key = 9 & rank = 1
+ID: 8 --- key = 7 & rank = 0
+ID: 23 --- key = 23 & rank = 1
+ID: 19 --- key = 14 & rank = 1
+ID: 21 --- key = 5 & rank = 2
+
+Printing roots after calling 'merge()' in 'extract_min'...
+Current minimum is 21 --- key = 5 & rank = 2
+
+*** PRINTING THE ROOTS ***
+ID: 21 --- key = 5 & rank = 2
+ID: 28 --- key = 5 & rank = 4
+
+Here is the deleted element...
+21 --- key = 5 & rank = 2
+
+Printing roots at the end of 'extract_min'...
+Current minimum is 28 --- key = 5 & rank = 4
+
+*** PRINTING THE ROOTS ***
+ID: 20 --- key = 99999999 & rank = 0
+ID: 23 --- key = 23 & rank = 1
+ID: 28 --- key = 5 & rank = 4
+
+Printing roots at the start of 'extract_min'...
+Current minimum is 28 --- key = 5 & rank = 4
+
+*** PRINTING THE ROOTS ***
+ID: 20 --- key = 99999999 & rank = 0
+ID: 23 --- key = 23 & rank = 1
+ID: 12 --- key = 7 & rank = 0
+ID: 4 --- key = 10 & rank = 0
+ID: 28 --- key = 5 & rank = 4
+
+Printing roots after calling 'merge()' in 'extract_min'...
+Current minimum is 28 --- key = 5 & rank = 4
+
+*** PRINTING THE ROOTS ***
+ID: 4 --- key = 10 & rank = 0
+ID: 12 --- key = 7 & rank = 2
+ID: 28 --- key = 5 & rank = 4
+
+Here is the deleted element...
+28 --- key = 5 & rank = 4
+
+Printing roots at the end of 'extract_min'...
+Current minimum is 25 --- key = 5 & rank = 1
+
+*** PRINTING THE ROOTS ***
+ID: 4 --- key = 10 & rank = 0
+ID: 12 --- key = 7 & rank = 2
+ID: 6 --- key = 24 & rank = 0
+ID: 25 --- key = 5 & rank = 1
+ID: 9 --- key = 99999999 & rank = 2
+ID: 18 --- key = 6 & rank = 3
+
+Printing roots at the start of 'extract_min'...
+Current minimum is 25 --- key = 5 & rank = 0
+
+*** PRINTING THE ROOTS ***
+ID: 27 --- key = 25 & rank = -1268173359
+ID: 6 --- key = 10 & rank = 0
+ID: 25 --- key = 5 & rank = 0
+ID: 9 --- key = 99999999 & rank = 0
+ID: 18 --- key = 6 & rank = 3
+ID: 4 --- key = 10 & rank = 0
+ID: 12 --- key = 7 & rank = 2
+ID: 11 --- key = 12 & rank = 3
