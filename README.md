@@ -37,6 +37,7 @@ A familiar output is expected, which shows the currently-running heap implementa
 
 # Results and Discussion
 ![Results](img/results.jpg?raw=true)
+
 Overall performance is as expected. The supplied heap implementation performed very well, and our new heap implementations fared competitively. Closest in performance for all major graphs was the Fibonacci heap implementation, followed by the Quake Heap, and then Binomial heap. 
 
 Performance losses for the Fibonacci heap probably stem from implementation complications, and nonoptimal code. This heap structure uses many levels of circular linked lists and if one isn’t careful while designing, tricky bugs can occur. There probably exist some areas within consolidate()that could be improved. Currently the first do, while loop has a nested while loop, with a termination condition inside the inner while loop. Escaping from both while loops once the condition is met was difficult, so we utilized goto to escape to a point right after both while loops. This seems inefficient.
