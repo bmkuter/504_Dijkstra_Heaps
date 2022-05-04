@@ -1,10 +1,10 @@
 #ifndef SHORTPATH_H_
 #define SHORTPATH_H_
-#include <queue>
-#include <deque>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <string.h>
 #include "quakeHeap.h" 
 
 #define LARGE1 9999999
@@ -18,26 +18,28 @@ struct arc{
   int end;
   };
 
-typedef struct anode{
+typedef struct generic_node{
    struct arc *first; /* first arc in linked list */
    int id;  // The number of the vertex in this node
    int key;  /* Distance estimate, named key to reuse heap code*/
    int P;  /* Predecessor node in shortest path */
    int position;  /* Position of node in heap, from 0 to Nm, where 0 is best */
+   int visited;
    } nodeitem;
 
-void DijkstraHeap(nodeitem N[], int Or, int Nm)
+void DijkstraQuakeHeap(nodeitem N[], int Or, int Nm)
 {
     quakeHeap<nodeitem> *thisHeap;
     struct arc *edge;
     int v, dv, min_d, min_v;
     int mark[Nm + 1];
+    node<generic_node>* phone_book[Nm+1];
 
     for(int q = 0; q < Nm + 1; q++){
-	mark[q] = 0;
+	    mark[q] = 0;
     }
 
-    thisHeap = new quakeHeap<nodeitem>(0.75);
+    thisHeap = new quakeHeap<nodeitem>(0.95);
     nodeitem *temp;
 
     N[Or].key = 0;  //Set starting node distance to 0.
@@ -46,7 +48,7 @@ void DijkstraHeap(nodeitem N[], int Or, int Nm)
     min_v = Or;     //Setting current node, min vertex
     min_d = 0;      //Setting current minimum distance to 0, as graph is unexplored.
 
-    thisHeap->insert(&N[min_v]); //Adds pointer of the origin node to the heap.
+    phone_book[Or] =thisHeap->insert(&N[min_v]); //Adds pointer of the origin node to the heap.
 
     while (thisHeap->IsEmpty() == 0) //While priority queue isn't empty...
     {
@@ -61,16 +63,20 @@ void DijkstraHeap(nodeitem N[], int Or, int Nm)
       while (edge != NULL){   //explore the outgoing arcs of u
           v = edge->end;      //Node at the other end of the edge.
           dv = min_d + edge->length;
+          //nodeitem *debug_helper = &N[v];
           if (N[v].key > dv){ //If v's current distance is greater than the distance from source to u + u to v...
-            
-            if(!mark[v]){thisHeap->insert(&N[v]); mark[v] = 1;}
+            if(!mark[v])
+            {
+              phone_book[v] = thisHeap->insert(&N[v]); 
+              mark[v] = 1;
+            }
             N[v].key = dv;  //Update v's distance to the new shorter path.
             N[v].P = min_v; //Set node v's parent to the current node, as it yields a shorter path.
-            thisHeap->decreaseKey(N[v].position, dv);
-      
+            thisHeap->decreaseKey(phone_book[v], dv);
           }                   //if D > dv
           edge = edge->next;
       }           // while edge
     }
 } /* end DijkstraHeap */
+
 #endif

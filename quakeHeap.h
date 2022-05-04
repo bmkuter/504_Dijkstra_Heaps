@@ -1,9 +1,6 @@
 #ifndef QUAKEHEAP_H_
 #define QUAKEHEAP_H_
-
-#include <unordered_map>
-#include <iostream>
-
+#include<cstddef>
 using namespace std;
 
 const int MAX_SIZE = 200000; //max amount of elements 
@@ -41,11 +38,10 @@ public:
       min = NULL;
       tail = NULL;
       head = NULL;
-      roots = 0;
       for(int i = 0; i < LOGMAX_SIZE; i++){heights[i] = 0;}
    };
 
-   void insert(Object* item){
+   node<Object> * insert(Object* item){
        node<Object> * newnode = new node<Object>;
        newnode->val = item->key;
        newnode->item = item;
@@ -55,19 +51,18 @@ public:
        newnode->parent = NULL;
        elements++;
        heights[0]++;
-       mapping.insert({item->position, newnode});
        rootInsert(newnode);
-       return;
+       return newnode;
    };       
 
-   void decreaseKey(int pos, int valin)
+   void decreaseKey(node<Object> * pos, int valin)
    {
-       node<Object> * temp, *found = (mapping.find(pos))->second;
+       node<Object> * temp, *found = pos;
        found->val = valin;
        if(found->parent == NULL){}
        else if(found == found->parent->left){found->parent->left = NULL;}
        else if(found == found->parent->right){found->parent->right = NULL;}
-       //fixHeights(found->parent);
+       fixHeights(found);
        if(found->parent != NULL){found->parent = NULL; rootInsert(found);}
        else{
 		nodeList<Object> * temp2 = head;
@@ -96,7 +91,6 @@ public:
        		cnode = cnode->right;
 		if(cnode == NULL){break;}
                 else if(cnode->parent != NULL){cnode->parent->right = NULL;}
-                //fixHeights(cnode);
        }
        elements--;
        heights[min->data->height]--;
@@ -113,10 +107,9 @@ public:
        		}
        }
        mergeTrees();
-       //while(mergeTrees()){}
-       for(int i = 0; i < LOGMAX_SIZE - 1; i++){
+       for(int i = 12; i < LOGMAX_SIZE - 1; i++){
            if(heights[i+1] > alpha*heights[i]){
-               //quake(i);
+               quake(i);
                break;
            }
        }
@@ -132,8 +125,6 @@ protected:
    nodeList<Object> * min;
    nodeList<Object> * head;
    nodeList<Object> * tail;
-   unordered_map<int, node<Object> *> mapping;
-   int roots;
    int elements;
    int heights[LOGMAX_SIZE];
    float alpha;
@@ -291,7 +282,7 @@ private:
                    dnode->parent = NULL;
                    fixHeights(dnode);
                 }
-                rootInsert(dnode);
+                //rootInsert(dnode);
             }
             cnode = cnode->next;
         }
