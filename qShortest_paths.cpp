@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
   chrono::time_point<chrono::steady_clock> start, stop;
   chrono::duration<double> difference_in_time;
   double difference_in_seconds; // Holds the final run time
-  nodeitem Nodes[maxnodes]; // The vertices of the graph
+  nodeitem * Nodes = new nodeitem[maxnodes]; // The vertices of the graph
   struct arc *edge;
 
 /* For simplicity, input vertices are numbered from 1 */
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
   for (int i=0;i<=Nm;i++){  // Initialize nodes
 	  Nodes[i].first = NULL;
-    Nodes[i].id = i;
+      Nodes[i].id = i;
 	  Nodes[i].key = LARGE;
 	  Nodes[i].P = -1;
 	  Nodes[i].position = -1;
@@ -83,16 +83,10 @@ int main(int argc, char *argv[])
   Or = 1; // origin node
   ofstream outfile(strcat(argv[1],"_out"));
 
-  for (int i=0;i<=Nm;i++){
-	  Nodes[i].key = LARGE;
-	  Nodes[i].P = -1;
-	  Nodes[i].position = -1;
-  }
-
   cout << "CALLING Dijkstra Heap\n" << endl;
   outfile << "Dijkstra Heap\n"<< endl;
   start = chrono::steady_clock::now();
-  DijkstraHeap(Nodes,Or,Nm);
+  DijkstraQuakeHeap(Nodes,Or,Nm);
   stop = chrono::steady_clock::now();
   difference_in_time = stop - start;
   difference_in_seconds = double(difference_in_time.count());
