@@ -1,10 +1,10 @@
 # 504_Dijkstra_Heaps
  
 # Team Information
-* Ian Chadwick  	U90596416  	ianjc
-* William Nilsen  	U12025523 	williamn
-* Benjamin Kuter  	U42809935  	bmkuter
-* Parker Dunn 		U67368938  	pgdunn
+* Ian Chadwick  	   ianjc
+* William Nilsen	 	 williamn
+* Benjamin Kuter	  	bmkuter
+* Parker Dunn 		  	 pgdunn
 
 Github: https://github.com/bmkuter/504_Dijkstra_Heaps/tree/bens_branch
 
