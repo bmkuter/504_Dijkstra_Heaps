@@ -24,7 +24,7 @@ Then, when popMin() is called, the minPtr is removed from the heap and its child
 ### Quake Heap:
 The Quake Heap was constructed using the descriptions and pseudocode provided in the original research paper1. As in the binomial heap, the quake heap is templatized to accept the pointer to the nodeItem object, in order to take advantage of the structure provided in HW4. The heap has a linked list of half-tree roots, and maintains pointers to the head, tail, and min, the minimum value of the list, with lazy inserts. As we are using half trees, when a node must be removed from a tree (due to a decreaseKey()or deleteMin() operation), we cut along the right spine, adding each new half-tree to the root list. Similar to the Fibonacci heap, a “phonebook” array was used to access a specific node’s address for decreaseKey() operations by referencing its unique id as the phonebook array’s entry offset, allowing for O(1) lookup. The quake heap is initialized with a float value between 0.5 and 1, as described in the research paper. This value, known as alpha, determines the fraction of higher-height nodes that must be present in order to induce a quake event. For this test, we used an alpha of 0.95.
 
-#How to Run our Code
+# How to Run our Code
 Code directory on SCC:
 `/projectnb/ec504/students/bmkuter/final_project`
 
