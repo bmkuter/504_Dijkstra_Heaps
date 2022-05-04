@@ -1,6 +1,6 @@
 Dijkstra Simple
 
-CPU TIME in SECS 4.75802
+CPU TIME in SECS 2.05094
 
 Shortest distance for 1 to 3001 is 141
 3001 --> 25423 --> 20732 --> 13000 --> 6515 --> 3863 --> 10263 --> 27924 --> 1
@@ -34,7 +34,7 @@ Shortest distance for 1 to 2 is 154
 
 Dijkstra Heap
 
-CPU TIME in SECS 0.024041
+CPU TIME in SECS 0.0089259
 
 Shortest distance for 1 to 3001 is 141
 3001 --> 25423 --> 20732 --> 13000 --> 6515 --> 3863 --> 10263 --> 27924 --> 1
@@ -68,7 +68,7 @@ Shortest distance for 1 to 2 is 154
 
 Bellman-Ford
 
-CPU TIME in SECS 0.0162755
+CPU TIME in SECS 0.0054872
 
 Shortest distance for 1 to 3001 is 141
 3001 --> 25423 --> 20732 --> 13000 --> 6515 --> 3863 --> 10263 --> 27924 --> 1
@@ -102,7 +102,7 @@ Shortest distance for 1 to 2 is 154
 
 Dijkstra Fib Heap
 
-CPU TIME in SECS 0.0401929
+CPU TIME in SECS 0.014495
 
 Shortest distance for 1 to 3001 is 141
 3001 --> 25423 --> 20732 --> 13000 --> 6515 --> 3863 --> 10263 --> 27924 --> 1
@@ -136,7 +136,7 @@ Shortest distance for 1 to 2 is 154
 
 Dijkstra Binomial Heap
 
-CPU TIME in SECS 0.0332909
+CPU TIME in SECS 0.0110867
 
 Shortest distance for 1 to 3001 is 141
 3001 --> 25423 --> 20732 --> 13000 --> 6515 --> 3863 --> 10263 --> 27924 --> 1
@@ -170,7 +170,7 @@ Shortest distance for 1 to 2 is 154
 
 Dijkstra Quake Heap
 
-CPU TIME in SECS 0.0740012
+CPU TIME in SECS 0.0240923
 
 Shortest distance for 1 to 3001 is 141
 3001 --> 25423 --> 20732 --> 13000 --> 6515 --> 3863 --> 10263 --> 27924 --> 1
@@ -204,7 +204,7 @@ Shortest distance for 1 to 2 is 154
 
 Dijkstra Rank-Pairing Heap
 
-CPU TIME in SECS 5.26397
+CPU TIME in SECS 1.31959
 
 Shortest distance for 1 to 3001 is 141
 3001 --> 25423 --> 20732 --> 13000 --> 6515 --> 3863 --> 10263 --> 27924 --> 1

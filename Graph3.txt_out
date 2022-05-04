@@ -1,6 +1,6 @@
 Dijkstra Simple
 
-CPU TIME in SECS 54.4265
+CPU TIME in SECS 22.7276
 
 Shortest distance for 1 to 10001 is 179
 10001 --> 66815 --> 57506 --> 95003 --> 22327 --> 98720 --> 74939 --> 42283 --> 34108 --> 32248 --> 35394 --> 56273 --> 72952 --> 47854 --> 29150 --> 50550 --> 77924 --> 1
@@ -34,7 +34,7 @@ Shortest distance for 1 to 2 is 179
 
 Dijkstra Heap
 
-CPU TIME in SECS 0.0903099
+CPU TIME in SECS 0.0364847
 
 Shortest distance for 1 to 10001 is 179
 10001 --> 66815 --> 57506 --> 95003 --> 22327 --> 98720 --> 74939 --> 42283 --> 34108 --> 32248 --> 35394 --> 56273 --> 72952 --> 47854 --> 29150 --> 50550 --> 77924 --> 1
@@ -68,7 +68,7 @@ Shortest distance for 1 to 2 is 179
 
 Bellman-Ford
 
-CPU TIME in SECS 0.0933571
+CPU TIME in SECS 0.0318023
 
 Shortest distance for 1 to 10001 is 179
 10001 --> 66815 --> 57506 --> 95003 --> 22327 --> 98720 --> 74939 --> 42283 --> 34108 --> 32248 --> 35394 --> 56273 --> 72952 --> 47854 --> 29150 --> 50550 --> 77924 --> 1
@@ -102,7 +102,7 @@ Shortest distance for 1 to 2 is 179
 
 Dijkstra Fib Heap
 
-CPU TIME in SECS 0.172027
+CPU TIME in SECS 0.0599636
 
 Shortest distance for 1 to 10001 is 179
 10001 --> 66815 --> 57506 --> 95003 --> 22327 --> 98720 --> 74939 --> 42283 --> 34108 --> 32248 --> 35394 --> 56273 --> 72952 --> 47854 --> 29150 --> 50550 --> 77924 --> 1
@@ -136,7 +136,7 @@ Shortest distance for 1 to 2 is 179
 
 Dijkstra Binomial Heap
 
-CPU TIME in SECS 0.133575
+CPU TIME in SECS 0.0471061
 
 Shortest distance for 1 to 10001 is 179
 10001 --> 66815 --> 57506 --> 95003 --> 22327 --> 98720 --> 74939 --> 42283 --> 34108 --> 32248 --> 35394 --> 56273 --> 72952 --> 47854 --> 29150 --> 50550 --> 77924 --> 1
@@ -170,7 +170,7 @@ Shortest distance for 1 to 2 is 179
 
 Dijkstra Quake Heap
 
-CPU TIME in SECS 0.305667
+CPU TIME in SECS 0.106735
 
 Shortest distance for 1 to 10001 is 179
 10001 --> 66815 --> 57506 --> 95003 --> 22327 --> 98720 --> 74939 --> 42283 --> 34108 --> 32248 --> 35394 --> 56273 --> 72952 --> 47854 --> 29150 --> 50550 --> 77924 --> 1
@@ -204,7 +204,7 @@ Shortest distance for 1 to 2 is 179
 
 Dijkstra Rank-Pairing Heap
 
-CPU TIME in SECS 41.8864
+CPU TIME in SECS 12.0479
 
 Shortest distance for 1 to 10001 is 179
 10001 --> 66815 --> 57506 --> 95003 --> 22327 --> 98720 --> 74939 --> 42283 --> 34108 --> 32248 --> 35394 --> 56273 --> 72952 --> 47854 --> 29150 --> 50550 --> 77924 --> 1
