@@ -53,4 +53,4 @@ Initially the binomial heap was a lot slower than expected and this is likely du
 * Actually Implementing Dijkstra's Algorithm
 * Binomial Heap | Brilliant Math & Science Wiki
 *138paulmiller/BinomialHeap: C++ Implementation of a binomial heap (github.com)
-*algorithmtutorprograms/BinomialHeaps.cpp at master · Bibeknam/algorithmtutorprograms (github.com)
+* algorithmtutorprograms/BinomialHeaps.cpp at master · Bibeknam/algorithmtutorprograms (github.com)
